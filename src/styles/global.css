@@ -1,1 +1,427 @@
 @import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   BearingBridge AI — "navigator's editorial" design system.
+   Cream paper, ink, one cinnabar accent. Fraunces (display serif, italic
+   accent device) + Instrument Sans (body). Square corners, no drop shadows
+   except deliberate card-lift states. Cartography motifs carry the brand.
+--------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/fraunces-italic.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/instrument-sans.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/fonts/instrument-sans-italic.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@theme {
+  --color-cream: #f3e9d8;
+  --color-cream-soft: #f8f1e5;
+  --color-paper: #fffdf9;
+  --color-ink: #16181d;
+  --color-ink-soft: #2a2d35;
+  --color-accent: #a63d2f;
+  --color-accent-deep: #8c3023;
+  --color-sea: #32536a; /* secondary chart-ink blue, lines + small details only */
+  --color-success: #16a34a;
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+
+  --tracking-kicker: 0.18em;
+
+  --animate-marquee: marquee 36s linear infinite;
+  --animate-spin-slow: spin 64s linear infinite;
+  --animate-needle: needle-settle 2.4s cubic-bezier(0.34, 1.4, 0.4, 1) both;
+  --animate-dash: dash-draw 2.6s ease-out forwards;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes needle-settle {
+    0% { transform: rotate(-140deg); }
+    55% { transform: rotate(24deg); }
+    78% { transform: rotate(-8deg); }
+    100% { transform: rotate(8deg); }
+  }
+  @keyframes dash-draw {
+    from { stroke-dashoffset: var(--dash, 600); }
+    to { stroke-dashoffset: 0; }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-cream);
+}
+
+/* ------------------------------------------------------------------ */
+/* Editorial primitives                                                */
+/* ------------------------------------------------------------------ */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: 'opsz' 100;
+}
+
+/* The signature device: one italic accent word inside a serif heading. */
+.accent-word {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.kicker {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.kicker::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.numeral {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+/* Grain overlay: keeps cream bands from reading flat on large screens. */
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.07 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Faint meridian grid for cream bands. */
+.meridians {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-ink) 4%, transparent) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Buttons                                                             */
+/* ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 1rem 2rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+.btn .btn-arrow {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Filled accent button with a sweeping ink fill on hover. */
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-cream);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+.btn-primary:hover::before {
+  transform: scaleX(1);
+}
+.btn-primary > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: color-mix(in srgb, var(--color-ink) 35%, transparent);
+}
+.btn-outline:hover {
+  border-color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-ink) 5%, transparent);
+}
+
+.btn-outline-cream {
+  background: transparent;
+  color: var(--color-cream);
+  border-color: color-mix(in srgb, var(--color-cream) 40%, transparent);
+}
+.btn-outline-cream:hover {
+  border-color: var(--color-cream);
+  background: color-mix(in srgb, var(--color-cream) 10%, transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Links                                                               */
+/* ------------------------------------------------------------------ */
+
+.link-rule {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+.link-rule::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-rule:hover::after,
+.link-rule[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll-reveal system (driven by a tiny IntersectionObserver)        */
+/* ------------------------------------------------------------------ */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--reveal-delay, 0) * 90ms);
+}
+[data-reveal='left'] { transform: translateX(-36px); }
+[data-reveal='right'] { transform: translateX(36px); }
+[data-reveal='scale'] { transform: scale(0.94); }
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* SVG line-draw on reveal */
+[data-draw] path,
+[data-draw] circle,
+[data-draw] line {
+  stroke-dasharray: var(--dash, 600);
+  stroke-dashoffset: var(--dash, 600);
+}
+[data-draw].is-revealed path,
+[data-draw].is-revealed circle,
+[data-draw].is-revealed line {
+  animation: dash-draw 2.4s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 120ms);
+}
+
+/* ------------------------------------------------------------------ */
+/* Header behaviour                                                    */
+/* ------------------------------------------------------------------ */
+
+#site-header {
+  transition: background-color 0.35s ease, border-color 0.35s ease, padding 0.35s ease;
+}
+#site-header.is-scrolled {
+  background: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom-color: color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+#scroll-progress {
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ------------------------------------------------------------------ */
+/* Marquee                                                             */
+/* ------------------------------------------------------------------ */
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: var(--animate-marquee);
+}
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cards                                                               */
+/* ------------------------------------------------------------------ */
+
+.card-lift {
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s ease;
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--color-ink) 28%, transparent);
+  border-color: color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+
+/* Offer cards: corner tick that extends on hover, like a chart marker. */
+.corner-tick {
+  position: relative;
+}
+.corner-tick::before,
+.corner-tick::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  background: var(--color-accent);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1), height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.corner-tick::before { width: 2rem; height: 2px; }
+.corner-tick::after { width: 2px; height: 2rem; }
+.corner-tick:hover::before { width: 4rem; }
+.corner-tick:hover::after { height: 4rem; }
+
+/* ------------------------------------------------------------------ */
+/* Accordion (native details, animated)                                */
+/* ------------------------------------------------------------------ */
+
+.accordion summary {
+  cursor: pointer;
+  list-style: none;
+}
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+.accordion .acc-icon {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.accordion[open] .acc-icon {
+  transform: rotate(45deg);
+}
+.accordion .acc-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.accordion[open] .acc-body {
+  grid-template-rows: 1fr;
+}
+.accordion .acc-body > div {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/* Forms                                                               */
+/* ------------------------------------------------------------------ */
+
+.field {
+  width: 100%;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+  padding: 0.875rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--color-ink);
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.field::placeholder {
+  color: color-mix(in srgb, var(--color-ink) 38%, transparent);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: var(--color-paper);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reduced motion: collapse every effect to plain visibility           */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  [data-draw] path,
+  [data-draw] circle,
+  [data-draw] line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none !important;
+  }
+  .marquee { animation: none; transform: none; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

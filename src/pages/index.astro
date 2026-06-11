@@ -1,8 +1,373 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CompassRose from '../components/CompassRose.astro';
+import PilotValidationDashboard from '../components/PilotValidationDashboard.astro';
+
+const commitments = [
+  {
+    n: '01',
+    title: 'We tell you where AI doesn’t belong.',
+    body: 'A third of the use cases we assess shouldn’t be built. We say so.',
+  },
+  {
+    n: '02',
+    title: 'Every pilot has kill criteria.',
+    body: 'Agreed before we start. You pay for evidence, not promises.',
+  },
+  {
+    n: '03',
+    title: 'Your team runs it without us.',
+    body: 'Training and handover are in the method, not an upsell.',
+  },
+];
+
+const phases = [
+  { n: '01', name: 'Bearings', q: 'Where are you, really?' },
+  { n: '02', name: 'Chart', q: 'Where is value — and where isn’t it?' },
+  { n: '03', name: 'Crossing', q: 'Can it survive your operations?' },
+  { n: '04', name: 'Build', q: 'Ship what survived.' },
+  { n: '05', name: 'Anchor', q: 'Does it stick when we leave?' },
+];
+
+const offers = [
+  {
+    name: 'Assessment',
+    tagline: 'Know where you stand.',
+    points: ['3–8 weeks, fixed scope', 'Ranked use-case portfolio', 'A roadmap you could execute without us'],
+  },
+  {
+    name: 'Pilot',
+    tagline: 'Proof before scale.',
+    points: ['6–12 weeks', 'Success and kill criteria agreed up front', 'Benchmarked East and West, on your data'],
+  },
+  {
+    name: 'Continuum',
+    tagline: 'Your fractional AI leadership.',
+    points: ['Monthly adoption and governance', 'East+West model watch', 'Quarterly executive steering'],
+  },
+  {
+    name: 'Academy',
+    tagline: 'Masterclasses and training.',
+    points: ['Executive masterclasses', 'Leadership workshops', 'Practitioner training, founder-led'],
+  },
+];
+
+const domains = ['Marketing', 'Communication', 'Media', 'eCommerce', 'Supply Chain', 'HR'];
+const eastModels = ['Qwen', 'DeepSeek', 'Kimi'];
+const westModels = ['GPT', 'Claude', 'Gemini'];
 ---
 
 <Layout>
-  <h1 class="text-3xl font-bold">BearingBridge AI</h1>
-  <p>English home page. Content to come.</p>
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div
+      class="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-32 sm:px-8 lg:min-h-[88vh] lg:grid-cols-[11fr_9fr] lg:gap-16 lg:pb-20 lg:pt-36"
+    >
+      <div>
+        <p class="kicker" data-reveal>Senior AI consulting · East + West</p>
+        <h1
+          class="font-display mt-6 max-w-2xl text-[2.6rem] leading-[1.08] tracking-tight text-ink sm:text-6xl xl:text-[4.25rem]"
+          data-reveal
+          style="--reveal-delay: 1"
+        >
+          AI adoption that survives contact with <span class="accent-word">reality</span>.
+        </h1>
+        <p class="mt-7 max-w-[48ch] text-lg leading-relaxed text-ink/75" data-reveal style="--reveal-delay: 2">
+          Senior consulting for companies that want AI working in their operations — not in a slide deck.
+          We pilot against criteria agreed in advance, then build and scale what proves itself.
+        </p>
+        <div class="mt-10 flex flex-col gap-4 sm:flex-row" data-reveal style="--reveal-delay: 3">
+          <a href="/contact" class="btn btn-primary" data-magnetic>
+            <span>Book a 30-minute call</span>
+            <span class="btn-arrow">→</span>
+          </a>
+          <a href="/azimuth" class="btn btn-outline">
+            <span>See the method</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- the validated-pilot dashboard: the headline, performed -->
+      <PilotValidationDashboard />
+    </div>
+  </section>
+
+  <!-- ========================= THE PROBLEM ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="grid gap-14 lg:grid-cols-12">
+        <div class="lg:col-span-5" data-reveal="left">
+          <p class="kicker">The problem</p>
+          <h2 class="font-display mt-5 text-3xl leading-tight text-ink sm:text-5xl">
+            Most AI programs don’t fail on technology. They fail on <span class="accent-word">honesty</span>.
+          </h2>
+          <p class="mt-6 max-w-prose leading-relaxed text-ink/70">
+            Overpromised pilots. Tools bought before problems are defined. Roadmaps written to impress
+            boards, not to be executed. We’ve watched this from inside global organizations for two
+            decades — and we built our method to do the opposite.
+          </p>
+        </div>
+        <div class="lg:col-span-7" data-reveal-group>
+          <ul class="divide-y divide-ink/10 border-y border-ink/10">
+            {commitments.map((c) => (
+              <li class="group flex gap-6 py-8 transition-colors duration-300 hover:bg-cream-soft sm:gap-10 sm:px-6" data-reveal>
+                <span class="numeral text-4xl sm:text-5xl">{c.n}</span>
+                <div>
+                  <h3 class="font-display text-xl text-ink sm:text-2xl">{c.title}</h3>
+                  <p class="mt-2 leading-relaxed text-ink/65">{c.body}</p>
+                </div>
+                <span class="ml-auto hidden self-center text-accent opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 sm:block">→</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= BOTH WORLDS ========================= -->
+  <section class="grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="grid items-center gap-14 lg:grid-cols-2">
+        <div data-reveal="left">
+          <p class="kicker">Both worlds</p>
+          <h2 class="font-display mt-5 text-3xl leading-tight text-ink sm:text-5xl">
+            We work with no ecosystem <span class="accent-word">allegiance</span>.
+          </h2>
+          <p class="mt-6 max-w-prose leading-relaxed text-ink/70">
+            Western firms see half the AI landscape. We operate from Hong Kong and Shanghai as well as
+            Europe — so we benchmark both ecosystems on <em>your</em> data, and deploy whichever wins on
+            performance, cost, and compliance.
+          </p>
+
+          <!-- East vs West model board -->
+          <div class="mt-8 grid grid-cols-[1fr_auto_1fr] items-stretch border border-ink/15 bg-paper">
+            <div class="p-5">
+              <p class="kicker !text-sea">East</p>
+              <ul class="mt-3 space-y-2">
+                {eastModels.map((m) => (
+                  <li class="font-display text-lg text-ink">{m}</li>
+                ))}
+              </ul>
+            </div>
+            <div class="flex items-center border-x border-ink/15 px-4">
+              <span class="font-display text-2xl italic text-accent">vs</span>
+            </div>
+            <div class="p-5 text-right">
+              <p class="kicker justify-end !text-sea">West</p>
+              <ul class="mt-3 space-y-2">
+                {westModels.map((m) => (
+                  <li class="font-display text-lg text-ink">{m}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <p class="mt-5 max-w-prose text-sm italic leading-relaxed text-ink/55">
+            Your data never transits to China unless you explicitly choose a China-hosted deployment.
+          </p>
+        </div>
+        <div data-reveal="right">
+          <div class="border border-ink/15 bg-paper p-2 sm:p-3">
+            <img
+              src="/Images/world-meridians.png"
+              alt="Line-drawn map of the eastern and western hemispheres on cream paper"
+              class="block w-full"
+              width="1600"
+              height="900"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= METHOD TEASER ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
+        <div data-reveal>
+          <p class="kicker">The method</p>
+          <h2 class="font-display mt-5 max-w-2xl text-3xl leading-tight text-ink sm:text-5xl">
+            AZIMUTH — the bearing we steer <span class="accent-word">by</span>.
+          </h2>
+          <p class="mt-5 max-w-xl leading-relaxed text-ink/70">
+            Five phases with proof gates between every promise and every investment. One continuous
+            layer — Horizon — watching what changes on both sides of the world.
+          </p>
+        </div>
+        <CompassRose class="hidden h-40 w-40 shrink-0 text-ink/70 lg:block" data-reveal />
+      </div>
+
+      <!-- phase rail -->
+      <div class="relative mt-16" data-reveal-group>
+        <div class="absolute left-0 right-0 top-[2.45rem] hidden border-t border-dashed border-ink/25 lg:block" aria-hidden="true"></div>
+        <ol class="grid gap-10 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+          {phases.map((p) => (
+            <li class="group relative" data-reveal>
+              <div class="flex h-20 items-center bg-paper lg:pr-4">
+                <span class="numeral text-5xl transition-transform duration-300 group-hover:-translate-y-1">{p.n}</span>
+              </div>
+              <h3 class="font-display mt-2 text-2xl text-ink">{p.name}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink/60">{p.q}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="mt-14" data-reveal>
+        <a href="/azimuth" class="btn btn-outline">
+          <span>Explore the method</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= OFFERS ========================= -->
+  <section class="grain relative bg-cream">
+    <div class="relative z-10 mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="max-w-2xl" data-reveal>
+        <p class="kicker">Four ways in</p>
+        <h2 class="font-display mt-5 text-3xl leading-tight text-ink sm:text-5xl">
+          One method underneath.
+        </h2>
+      </div>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 xl:grid-cols-4" data-reveal-group>
+        {offers.map((o) => (
+          <a
+            href="/services"
+            class="card-lift corner-tick group flex flex-col border border-ink/15 bg-paper p-7"
+            data-reveal
+          >
+            <p class="kicker">AZIMUTH</p>
+            <h3 class="font-display mt-3 text-3xl text-ink">{o.name}</h3>
+            <p class="mt-2 font-display italic text-ink/60">{o.tagline}</p>
+            <ul class="mt-6 flex-1 space-y-3 border-t border-ink/10 pt-6">
+              {o.points.map((pt) => (
+                <li class="flex gap-3 text-sm leading-relaxed text-ink/70">
+                  <span class="mt-0.5 text-success">✓</span>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+            <span class="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-accent">
+              Details <span class="btn-arrow transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= DOMAINS MARQUEE ========================= -->
+  <section class="overflow-hidden border-y border-ink/10 bg-paper py-14">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8" data-reveal>
+      <h2 class="font-display text-2xl leading-tight text-ink sm:text-3xl">
+        Deep in the functions that touch revenue and <span class="accent-word">people</span>.
+      </h2>
+      <p class="mt-3 max-w-2xl text-ink/65">
+        We don’t do generic AI consulting. We work where we have 25 years of operating scar tissue.
+      </p>
+    </div>
+    <div class="relative mt-10" aria-hidden="true">
+      <div class="marquee gap-0">
+        {[0, 1].map(() => (
+          <div class="flex shrink-0 items-center">
+            {domains.map((d) => (
+              <span class="flex items-center">
+                <span class="font-display px-8 text-4xl text-ink/80 transition-colors duration-300 hover:text-accent sm:text-5xl">{d}</span>
+                <span class="text-accent">✦</span>
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="sr-only">{domains.join(', ')}</p>
+  </section>
+
+  <!-- ========================= FOUNDER ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="grid items-center gap-14 lg:grid-cols-12">
+        <div class="lg:col-span-4" data-reveal="left">
+          <!-- monogram placeholder until the founder photo ships -->
+          <div class="meridians grain relative flex aspect-[4/5] items-center justify-center border border-ink/15 bg-cream">
+            <span class="font-display text-8xl italic text-accent">CD</span>
+            <span class="absolute bottom-4 left-0 right-0 text-center text-xs uppercase tracking-kicker text-ink/45">
+              Founder · Since 1998 in China
+            </span>
+          </div>
+        </div>
+        <div class="lg:col-span-8" data-reveal="right">
+          <p class="kicker">Who you’ll work with</p>
+          <h2 class="font-display mt-5 text-3xl leading-tight text-ink sm:text-4xl">
+            Founded by <span class="accent-word">Cyril Drouin</span>
+          </h2>
+          <p class="mt-5 max-w-prose text-lg leading-relaxed text-ink/70">
+            25+ years building digital and commerce operations across Asia and Europe; founder of one of
+            China’s first eCommerce agencies (2003); former CEO, Publicis Commerce &amp; Performance
+            Marketing, China and North Asia.
+          </p>
+          <dl class="mt-10 grid grid-cols-3 gap-6 border-t border-ink/10 pt-8">
+            <div>
+              <dt class="text-xs uppercase tracking-kicker text-ink/50">Years operating</dt>
+              <dd class="numeral mt-2 text-5xl"><span data-count-to="25" data-count-suffix="+">0</span></dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-kicker text-ink/50">First agency founded</dt>
+              <dd class="numeral mt-2 text-5xl"><span data-count-to="2003">0</span></dd>
+            </div>
+            <div>
+              <dt class="text-xs uppercase tracking-kicker text-ink/50">Regions covered</dt>
+              <dd class="numeral mt-2 text-5xl"><span data-count-to="4">0</span></dd>
+            </div>
+          </dl>
+          <div class="mt-10">
+            <a href="/about" class="btn btn-outline">
+              <span>About us</span>
+              <span class="btn-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= REGIONS STRIP ========================= -->
+  <section class="grain relative bg-cream">
+    <div class="relative z-10 mx-auto max-w-7xl px-5 py-14 sm:px-8" data-reveal>
+      <p class="text-center font-display text-xl leading-relaxed text-ink/75 sm:text-2xl">
+        Operating across <span class="text-ink">North Asia</span> · <span class="text-ink">Southeast Asia</span> ·
+        <span class="text-ink">Middle East</span> · <span class="text-ink">Europe</span>,
+        with entities in <span class="accent-word">Hong Kong</span> and <span class="accent-word">Shanghai</span>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= FINAL CTA ========================= -->
+  <section class="relative overflow-hidden bg-ink text-cream">
+    <CompassRose
+      needle={false}
+      class="pointer-events-none absolute -left-40 top-1/2 h-[34rem] w-[34rem] -translate-y-1/2 text-cream opacity-[0.06] motion-safe:animate-spin-slow"
+    />
+    <div class="relative z-10 mx-auto max-w-4xl px-5 py-24 text-center sm:px-8 lg:py-32">
+      <p class="kicker justify-center !text-cream/50" data-reveal>Next step</p>
+      <h2 class="font-display mt-6 text-4xl leading-tight sm:text-6xl" data-reveal style="--reveal-delay: 1">
+        Start with your <span class="accent-word">bearings</span>.
+      </h2>
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-cream/70" data-reveal style="--reveal-delay: 2">
+        A 30-minute conversation. If we’re not the right partner, we’ll tell you — and tell you who might be.
+      </p>
+      <div class="mt-10" data-reveal style="--reveal-delay: 3">
+        <a href="/contact" class="btn btn-primary" data-magnetic>
+          <span>Book a call</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
 </Layout>

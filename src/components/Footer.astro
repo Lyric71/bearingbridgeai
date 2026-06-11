@@ -1,0 +1,91 @@
+---
+import { getLocaleFromUrl, localizePath, useTranslations } from '../i18n/utils';
+import CompassRose from './CompassRose.astro';
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const links = [
+  { href: '/azimuth', label: t('nav.method') },
+  { href: '/services', label: t('nav.services') },
+  { href: '/expertise', label: t('nav.expertise') },
+  { href: '/insights', label: t('nav.insights') },
+  { href: '/about', label: t('nav.about') },
+  { href: '/contact', label: t('nav.contact') },
+].map((l) => ({ ...l, href: localizePath(l.href, locale) }));
+
+const year = new Date().getFullYear();
+---
+
+<footer class="relative overflow-hidden bg-ink text-cream">
+  <!-- oversized compass bleeding off the corner -->
+  <CompassRose
+    needle={false}
+    class="pointer-events-none absolute -right-32 -top-32 h-[28rem] w-[28rem] text-cream opacity-[0.07] motion-safe:animate-spin-slow"
+  />
+
+  <div class="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <!-- brand + data note -->
+      <div class="lg:col-span-5">
+        <a href={localizePath('/', locale)} class="flex items-baseline gap-1">
+          <span class="font-display text-2xl">BearingBridge</span>
+          <span class="font-display text-2xl italic text-accent">AI</span>
+        </a>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-cream/60">
+          {t('footer.regions')}
+        </p>
+        <p class="mt-2 text-sm text-cream/60">{t('footer.entities')}</p>
+        <p class="mt-6 max-w-sm border-l-2 border-accent pl-4 text-sm leading-relaxed text-cream/75">
+          {t('footer.dataNote')}
+        </p>
+      </div>
+
+      <!-- nav -->
+      <div class="lg:col-span-3">
+        <h2 class="kicker !text-cream/50">{t('footer.nav')}</h2>
+        <ul class="mt-5 space-y-3">
+          {links.map((l) => (
+            <li>
+              <a href={l.href} class="link-rule text-[0.95rem] text-cream/75 hover:text-cream">{l.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- newsletter -->
+      <div class="lg:col-span-4">
+        <h2 class="kicker !text-cream/50">{t('footer.newsletter.title')}</h2>
+        <p class="mt-5 text-sm leading-relaxed text-cream/60">{t('footer.newsletter.sub')}</p>
+        <form class="mt-5 flex" action="/contact" method="get">
+          <label class="sr-only" for="newsletter-email">{t('footer.newsletter.placeholder')}</label>
+          <input
+            id="newsletter-email"
+            type="email"
+            name="email"
+            placeholder={t('footer.newsletter.placeholder')}
+            class="field flex-1 !border-cream/25 !text-cream placeholder:!text-cream/40 focus:!border-accent focus:!bg-transparent"
+            required
+          />
+          <button type="submit" class="btn btn-primary shrink-0 !px-5 !py-0 !text-sm">
+            <span>{t('footer.newsletter.cta')}</span>
+          </button>
+        </form>
+        <div class="mt-8">
+          <h2 class="kicker !text-cream/50">{t('footer.connect')}</h2>
+          <a
+            href="https://www.linkedin.com/company/bearingbridge-ai"
+            rel="noopener"
+            target="_blank"
+            class="link-rule mt-4 inline-block text-[0.95rem] text-cream/75 hover:text-cream"
+          >LinkedIn ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 flex flex-col gap-2 border-t border-cream/15 pt-6 text-xs text-cream/45 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} BearingBridge AI. {t('footer.rights')}</p>
+      <p class="font-display italic">AI adoption that survives contact with reality.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const offers = [
+  {
+    n: '01',
+    name: 'AZIMUTH Assessment',
+    tagline: 'Know where you stand before you spend.',
+    duration: '3–4 weeks (mid-market) · 6–8 weeks (enterprise, multi-BU / multi-country)',
+    points: [
+      'Function interviews, data and systems audit',
+      'Ranked use-case portfolio',
+      'East+West model strategy',
+      'Regulatory mapping for your operating countries',
+      'Executive readout',
+    ],
+    promise:
+      'The promise: a roadmap you could execute without us. Most clients don’t — but they could, and that changes the conversation.',
+    cta: 'Request scope details',
+  },
+  {
+    n: '02',
+    name: 'AZIMUTH Pilot',
+    tagline: 'Evidence before scale.',
+    duration: '6–8 weeks (mid-market) · 8–12 weeks (enterprise)',
+    points: [
+      'One or two prioritized use cases built to working-pilot standard',
+      'Benchmarked across Chinese and Western models on your own data',
+      'Security and compliance review for production candidates',
+    ],
+    promise:
+      'The clause we’re known for: kill criteria, agreed before kickoff. If the pilot doesn’t meet them, we stop, document why — and you’ve bought certainty at pilot price instead of failure at production price.',
+    cta: 'Request scope details',
+  },
+  {
+    n: '03',
+    name: 'AZIMUTH Continuum',
+    tagline: 'Fractional AI leadership, both worlds covered.',
+    duration: 'Monthly cadence · quarterly executive steering',
+    points: [
+      'Adoption metrics, governance embedding, training cadence',
+      'East+West model and regulation briefing',
+      'Quarterly portfolio re-prioritization',
+    ],
+    promise:
+      'For organizations that need senior AI judgment on tap without hiring a Chief AI Officer in every region.',
+    cta: 'Discuss a retainer',
+  },
+  {
+    n: '04',
+    name: 'AZIMUTH Academy',
+    tagline: 'Your people, fluent in what’s real.',
+    duration: 'Half-day to recurring programs · founder-led',
+    points: [
+      'Executive masterclass — the AI state of play across both ecosystems, led by Cyril Drouin',
+      'Leadership workshops — prioritization, governance, build-vs-buy, managing AI delivery',
+      'Practitioner training — hands-on with the tools and models from your roadmap',
+      'The East-West Briefing — Chinese AI for Western-led firms, Western AI for Asian firms. Nobody else runs this credibly.',
+    ],
+    promise: 'Training and fluency are how adoption sticks — Academy runs inside every other offer too.',
+    cta: 'Request the Academy catalog',
+  },
+];
+
+const pathways = [
+  { label: 'Typical mid-market path', steps: ['Academy session', 'Assessment', 'Pilot', 'Continuum'] },
+  { label: 'Typical enterprise path', steps: ['Assessment', 'Pilots', 'Continuum'], note: 'Academy embedded throughout' },
+];
+---
+
+<Layout
+  title="Services — four ways in, one method | BearingBridge AI"
+  description="AZIMUTH Assessment, Pilot, Continuum and Academy. Fixed scope, fixed duration, fees on request — sized to your organization, never a teaser number."
+>
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto max-w-5xl px-5 pb-20 pt-40 text-center sm:px-8 lg:pt-52">
+      <p class="kicker justify-center" data-reveal>Services</p>
+      <h1 class="font-display mt-6 text-4xl leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl" data-reveal style="--reveal-delay: 1">
+        Four ways in. One method <span class="accent-word">underneath</span>.
+      </h1>
+      <p class="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-ink/70" data-reveal style="--reveal-delay: 2">
+        Fixed scope, fixed duration, fees on request — sized to your organization, never a teaser number.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= OFFER CARDS ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+      <div class="grid gap-8 lg:grid-cols-2" data-reveal-group>
+        {offers.map((o) => (
+          <article class="card-lift corner-tick flex flex-col border border-ink/15 bg-paper p-8 sm:p-10" data-reveal>
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <span class="numeral text-5xl">{o.n}</span>
+                <h2 class="font-display mt-3 text-3xl text-ink sm:text-4xl">{o.name}</h2>
+                <p class="mt-2 font-display text-lg italic text-ink/60">{o.tagline}</p>
+              </div>
+              <!-- honesty as design: the price slot -->
+              <div class="shrink-0 border border-ink/20 px-4 py-3 text-center">
+                <p class="text-[0.65rem] uppercase tracking-kicker text-ink/50">Fees</p>
+                <p class="font-display mt-1 text-sm italic text-ink">on request</p>
+              </div>
+            </div>
+
+            <p class="mt-6 border-y border-ink/10 py-4 text-sm font-medium text-ink/70">
+              <span class="text-accent">⏱</span>&ensp;{o.duration}
+            </p>
+
+            <ul class="mt-6 flex-1 space-y-3">
+              {o.points.map((pt) => (
+                <li class="flex gap-3 leading-relaxed text-ink/75">
+                  <span class="mt-0.5 shrink-0 text-success">✓</span>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+
+            <p class="mt-8 border-l-2 border-accent bg-cream-soft p-5 text-sm leading-relaxed text-ink/80">
+              {o.promise}
+            </p>
+
+            <div class="mt-8">
+              <a href="/contact" class="btn btn-primary w-full sm:w-auto">
+                <span>{o.cta}</span>
+                <span class="btn-arrow">→</span>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= PATHWAYS ========================= -->
+  <section class="grain relative bg-cream">
+    <div class="relative z-10 mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-28">
+      <div class="max-w-2xl" data-reveal>
+        <p class="kicker">Pathways</p>
+        <h2 class="font-display mt-5 text-3xl leading-tight text-ink sm:text-4xl">
+          Where most engagements <span class="accent-word">start</span>.
+        </h2>
+      </div>
+
+      <div class="mt-14 space-y-10">
+        {pathways.map((p) => (
+          <div class="border border-ink/15 bg-paper p-8" data-reveal>
+            <p class="kicker">{p.label}</p>
+            <ol class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-0">
+              {p.steps.map((s, i) => (
+                <>
+                  <li class="group flex items-center gap-3 border border-ink/15 bg-cream-soft px-5 py-3 transition-colors duration-300 hover:border-accent">
+                    <span class="numeral text-xl">{String(i + 1).padStart(2, '0')}</span>
+                    <span class="font-display text-lg text-ink">{s}</span>
+                  </li>
+                  {i < p.steps.length - 1 && (
+                    <li aria-hidden="true" class="hidden px-4 text-accent sm:block">
+                      <svg viewBox="0 0 48 12" class="h-3 w-12" fill="none">
+                        <line x1="0" y1="6" x2="40" y2="6" stroke="currentColor" stroke-dasharray="4 4" />
+                        <path d="M40 1 L47 6 L40 11" stroke="currentColor" fill="none" />
+                      </svg>
+                    </li>
+                  )}
+                </>
+              ))}
+            </ol>
+            {p.note && <p class="mt-4 font-display text-sm italic text-ink/55">+ {p.note}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= CTA ========================= -->
+  <section class="bg-ink text-cream">
+    <div class="mx-auto max-w-3xl px-5 py-20 text-center sm:px-8 lg:py-24" data-reveal>
+      <h2 class="font-display text-3xl leading-tight sm:text-4xl">
+        Not sure which way in? Start with a <span class="accent-word">conversation</span>.
+      </h2>
+      <div class="mt-8">
+        <a href="/contact" class="btn btn-primary" data-magnetic>
+          <span>Book a 30-minute call</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pieces = [
+  {
+    n: '01',
+    category: 'The East-West Briefing',
+    title: 'What Chinese frontier models do better — and where they don’t.',
+    summary:
+      'Qwen, DeepSeek and Kimi benchmarked honestly against the Western frontier: capability, cost, and the deployment questions nobody puts in the marketing.',
+    status: 'Issue #1 · Coming soon',
+  },
+  {
+    n: '02',
+    category: 'Method',
+    title: 'Why every AI pilot we run has kill criteria.',
+    summary:
+      'Failure conditions in the contract are what taking your money seriously looks like. The reasoning, the template, and what it changes in the room.',
+    status: 'Coming soon',
+  },
+  {
+    n: '03',
+    category: 'Functions',
+    title: 'The CMO’s AI map for 2026: what’s real in marketing AI across Asia and Europe.',
+    summary:
+      'Content production, media intelligence, conversational commerce — what is deployed and working today, region by region, and what is still a demo.',
+    status: 'Coming soon',
+  },
+];
+---
+
+<Layout
+  title="Insights — The East-West Briefing | BearingBridge AI"
+  description="The East-West Briefing and method pieces by Cyril Drouin: what moved in AI on both sides of the world, and what it means for operators."
+>
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto max-w-5xl px-5 pb-20 pt-40 sm:px-8 lg:pt-52">
+      <p class="kicker" data-reveal>Insights</p>
+      <h1 class="font-display mt-6 text-4xl leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl" data-reveal style="--reveal-delay: 1">
+        Reading the water on both <span class="accent-word">sides</span>.
+      </h1>
+      <p class="mt-7 max-w-2xl text-lg leading-relaxed text-ink/70" data-reveal style="--reveal-delay: 2">
+        A monthly East-West Briefing and one method piece per month. Written by Cyril Drouin —
+        no ghostwriters, no hype.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= ARTICLE INDEX ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-5xl px-5 py-24 sm:px-8 lg:py-32">
+      <ol class="divide-y divide-ink/10 border-y border-ink/10" data-reveal-group>
+        {pieces.map((p) => (
+          <li class="group relative py-12 transition-colors duration-300 hover:bg-cream-soft sm:px-8" data-reveal>
+            <div class="flex flex-col gap-6 sm:flex-row sm:gap-10">
+              <span class="numeral text-6xl sm:text-7xl">{p.n}</span>
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="border border-accent/40 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-kicker text-accent">{p.category}</span>
+                  <span class="text-xs uppercase tracking-kicker text-ink/45">{p.status}</span>
+                </div>
+                <h2 class="font-display mt-4 max-w-2xl text-2xl leading-snug text-ink transition-colors duration-300 group-hover:text-accent-deep sm:text-3xl">
+                  {p.title}
+                </h2>
+                <p class="mt-3 max-w-2xl leading-relaxed text-ink/65">{p.summary}</p>
+                <p class="mt-4 text-sm text-ink/50">By Cyril Drouin</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ========================= NEWSLETTER BAND ========================= -->
+  <section class="relative overflow-hidden bg-ink text-cream">
+    <div class="relative z-10 mx-auto max-w-3xl px-5 py-20 text-center sm:px-8 lg:py-24" data-reveal>
+      <p class="kicker justify-center !text-cream/50">The East-West Briefing</p>
+      <h2 class="font-display mt-6 text-3xl leading-tight sm:text-4xl">
+        Get the briefing before your competitors <span class="accent-word">do</span>.
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl leading-relaxed text-cream/65">
+        Monthly. What moved in AI on both sides of the world — and what it means for you.
+        First issue lands soon; subscribers get it first.
+      </p>
+      <form class="mx-auto mt-8 flex max-w-md" action="/contact" method="get">
+        <label class="sr-only" for="insights-email">Work email</label>
+        <input
+          id="insights-email"
+          type="email"
+          name="email"
+          placeholder="Work email"
+          class="field flex-1 !border-cream/25 !text-cream placeholder:!text-cream/40 focus:!border-accent focus:!bg-transparent"
+          required
+        />
+        <button type="submit" class="btn btn-primary shrink-0 !py-0">
+          <span>Subscribe</span>
+        </button>
+      </form>
+    </div>
+  </section>
+</Layout>

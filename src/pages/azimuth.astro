@@ -1,0 +1,224 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CompassRose from '../components/CompassRose.astro';
+
+const phases = [
+  {
+    n: '01',
+    name: 'Bearings',
+    bearing: 'N 0°',
+    q: 'Where are you, really?',
+    do: 'Interviews across functions, systems and data audit, current AI usage and skills mapping.',
+    get: 'No flattery: an honest state-of-AI assessment, including what’s working that you should leave alone.',
+  },
+  {
+    n: '02',
+    name: 'Chart',
+    bearing: 'NE 72°',
+    q: 'Where is value — and where isn’t it?',
+    do: 'Use-case portfolio ranked by impact × feasibility. Model strategy across both ecosystems. Governance baseline.',
+    get: 'Explicit no-go zones: the use cases we recommend you don’t pursue, and why.',
+  },
+  {
+    n: '03',
+    name: 'Crossing',
+    bearing: 'SE 144°',
+    q: 'Can it survive contact with your operations?',
+    do: 'One or two use cases, piloted against success and kill criteria agreed before we start.',
+    get: 'Pilots that don’t earn their way to production get killed — in writing, with the lessons documented.',
+  },
+  {
+    n: '04',
+    name: 'Build',
+    bearing: 'SW 216°',
+    q: 'Ship what survived.',
+    do: 'Production deployment: integrations, security, the winning model for each job — Chinese or Western.',
+    get: 'Built to be operated by your team, not to make you dependent on ours.',
+  },
+  {
+    n: '05',
+    name: 'Anchor',
+    bearing: 'NW 288°',
+    q: 'Does it stick when we leave?',
+    do: 'Training, governance embedded in workflows rather than documents, adoption measurement, handover.',
+    get: 'The phase most consultancies skip, because it ends the engagement. We think it’s the point.',
+  },
+];
+---
+
+<Layout
+  title="AZIMUTH — the method | BearingBridge AI"
+  description="A disciplined path from honest assessment to operating reality, with proof gates between every promise and every investment. Five phases: Bearings, Chart, Crossing, Build, Anchor."
+>
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <CompassRose
+      class="pointer-events-none absolute -right-24 top-24 hidden h-[30rem] w-[30rem] text-ink/12 lg:block"
+      needle={true}
+    />
+    <div class="relative z-10 mx-auto max-w-7xl px-5 pb-24 pt-40 sm:px-8 lg:pb-32 lg:pt-52">
+      <p class="kicker" data-reveal>The method</p>
+      <h1 class="font-display mt-6 text-6xl tracking-tight text-ink sm:text-8xl lg:text-9xl" data-reveal style="--reveal-delay: 1">
+        AZIMUTH
+      </h1>
+      <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink/70" data-reveal style="--reveal-delay: 2">
+        An azimuth is the exact bearing a navigator steers by. Not a vision. Not a moonshot.
+        A precise, checkable <span class="font-display italic text-accent">direction</span> — recalculated as conditions change.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ INTRO ============================ -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-3xl px-5 py-20 sm:px-8 lg:py-24" data-reveal>
+      <p class="font-display text-2xl leading-snug text-ink sm:text-3xl">
+        AI is moving too fast for five-year transformation plans and too consequentially for
+        improvisation. AZIMUTH is our answer: a disciplined path from honest assessment to operating
+        reality, with <span class="accent-word">proof gates</span> between every promise and every investment.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== SCROLLYTELLING PHASES ===================== -->
+  <section id="phases" class="relative bg-paper">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8">
+      <div class="grid gap-12 lg:grid-cols-12">
+        <!-- sticky compass panel (desktop) -->
+        <div class="hidden lg:col-span-5 lg:block">
+          <div class="sticky top-24 flex flex-col items-center py-12">
+            <CompassRose id="method-compass" class="h-80 w-80 text-ink transition-colors duration-500 xl:h-96 xl:w-96" />
+            <div class="mt-8 text-center">
+              <p class="kicker justify-center">Current bearing</p>
+              <p id="phase-bearing" class="numeral mt-3 text-4xl transition-all duration-500">N 0°</p>
+              <p id="phase-name" class="font-display mt-2 text-2xl text-ink transition-all duration-500">Bearings</p>
+            </div>
+            <!-- phase dots -->
+            <ol id="phase-dots" class="mt-6 flex gap-3" aria-hidden="true">
+              {phases.map((_, i) => (
+                <li class={`h-2 w-2 border border-ink/40 transition-all duration-300 ${i === 0 ? 'bg-accent border-accent' : ''}`}></li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        <!-- phase sections -->
+        <div class="lg:col-span-7">
+          <ol class="relative border-l border-dashed border-ink/25 lg:border-l-0">
+            {phases.map((p, i) => (
+              <li
+                class="phase-section relative py-16 pl-8 lg:py-24 lg:pl-0"
+                data-phase={i}
+                data-bearing={p.bearing}
+                data-name={p.name}
+                data-angle={i * 72}
+              >
+                <span class="absolute -left-[5px] top-[4.7rem] h-[9px] w-[9px] bg-accent lg:hidden" aria-hidden="true"></span>
+                <div data-reveal>
+                  <div class="flex items-baseline gap-5">
+                    <span class="numeral text-7xl sm:text-8xl">{p.n}</span>
+                    <div>
+                      <h2 class="font-display text-4xl text-ink sm:text-5xl">{p.name}</h2>
+                      <p class="mt-1 font-display text-lg italic text-ink/55">{p.q}</p>
+                    </div>
+                  </div>
+                  <div class="mt-8 grid gap-6 sm:grid-cols-2">
+                    <div class="border border-ink/15 bg-cream-soft p-6">
+                      <p class="kicker">What we do</p>
+                      <p class="mt-3 leading-relaxed text-ink/75">{p.do}</p>
+                    </div>
+                    <div class="corner-tick border border-ink/15 bg-paper p-6">
+                      <p class="kicker">What you get</p>
+                      <p class="mt-3 leading-relaxed text-ink/75">{p.get}</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= HORIZON BAND ========================= -->
+  <section class="border-y-2 border-accent bg-cream-soft">
+    <div class="mx-auto max-w-7xl px-5 py-16 sm:px-8" data-reveal>
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-3xl">
+          <p class="kicker">Horizon · Continuous</p>
+          <h2 class="font-display mt-4 text-3xl text-ink sm:text-4xl">
+            What’s changing on both sides of the <span class="accent-word">world</span>?
+          </h2>
+          <p class="mt-4 leading-relaxed text-ink/70">
+            Model watch and regulation watch (EU AI Act, China’s AI measures, Middle East frameworks),
+            quarterly roadmap refresh. AI shifts monthly; your bearing should too.
+          </p>
+        </div>
+        <div class="shrink-0" aria-hidden="true">
+          <svg viewBox="0 0 160 80" class="h-24 w-48 text-accent" fill="none" data-draw>
+            <path d="M4 60 Q 80 10, 156 60" stroke="currentColor" stroke-width="1.5" style="--dash: 200" />
+            <circle cx="80" cy="34" r="4" stroke="currentColor" stroke-width="1.5" style="--dash: 40" />
+            <line x1="4" y1="70" x2="156" y2="70" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" style="--dash: 160" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= KILL CRITERIA ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-3xl px-5 py-24 text-center sm:px-8 lg:py-32" data-reveal>
+      <p class="kicker justify-center">The clause we’re known for</p>
+      <h2 class="font-display mt-6 text-3xl leading-tight text-ink sm:text-5xl">
+        Why the kill criteria <span class="accent-word">matter</span>.
+      </h2>
+      <p class="mt-7 text-lg leading-relaxed text-ink/70">
+        Anyone can show you a demo. The question is what happens when the demo meets your data, your
+        processes, and your people. We put failure conditions in the contract because that’s what
+        taking your money seriously looks like.
+      </p>
+      <div class="mt-10">
+        <a href="/contact" class="btn btn-primary" data-magnetic>
+          <span>Book a call</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Scroll-driven compass: as each phase section crosses the viewport
+    // midline, swing the sticky needle to that phase's bearing.
+    const compass = document.getElementById('method-compass');
+    const needle = compass?.querySelector<SVGGElement>('[data-compass-needle]');
+    const bearingEl = document.getElementById('phase-bearing');
+    const nameEl = document.getElementById('phase-name');
+    const dots = document.querySelectorAll('#phase-dots li');
+    const sections = document.querySelectorAll<HTMLElement>('.phase-section');
+
+    if (needle) {
+      needle.style.transition = 'transform 0.9s cubic-bezier(0.34, 1.3, 0.4, 1)';
+
+      const setPhase = (el: HTMLElement) => {
+        const i = Number(el.dataset.phase ?? 0);
+        needle.style.transform = `rotate(${Number(el.dataset.angle ?? 0)}deg)`;
+        if (bearingEl) bearingEl.textContent = el.dataset.bearing ?? '';
+        if (nameEl) nameEl.textContent = el.dataset.name ?? '';
+        dots.forEach((d, j) => {
+          d.classList.toggle('bg-accent', j === i);
+          d.classList.toggle('border-accent', j === i);
+        });
+      };
+
+      const obs = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) setPhase(e.target as HTMLElement);
+          }
+        },
+        { rootMargin: '-45% 0px -45% 0px' },
+      );
+      sections.forEach((s) => obs.observe(s));
+    }
+  </script>
+</Layout>

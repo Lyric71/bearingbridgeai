@@ -1,0 +1,73 @@
+---
+/**
+ * Line-drawn compass rose. The brand's central motif.
+ * - `class` controls size/positioning from the caller.
+ * - The needle group carries `data-compass-needle` so page scripts can
+ *   rotate it (scroll-driven on /azimuth, settle-in elsewhere).
+ */
+interface Props {
+  class?: string;
+  needle?: boolean;
+  id?: string;
+}
+const { class: className = '', needle = true, id } = Astro.props;
+
+const ticks = Array.from({ length: 72 }, (_, i) => i * 5);
+---
+
+<svg
+  id={id}
+  class={className}
+  viewBox="0 0 400 400"
+  fill="none"
+  role="img"
+  aria-label="Compass rose"
+>
+  <!-- outer ring -->
+  <circle cx="200" cy="200" r="192" stroke="currentColor" stroke-width="1" opacity="0.5" />
+  <circle cx="200" cy="200" r="170" stroke="currentColor" stroke-width="0.75" opacity="0.35" />
+
+  <!-- degree ticks -->
+  <g opacity="0.6">
+    {ticks.map((deg) => (
+      <line
+        x1="200" y1="12" x2="200" y2={deg % 30 === 0 ? 26 : 19}
+        stroke="currentColor"
+        stroke-width={deg % 90 === 0 ? 1.5 : 0.75}
+        transform={`rotate(${deg} 200 200)`}
+      />
+    ))}
+  </g>
+
+  <!-- cardinal letters -->
+  <g font-family="var(--font-display)" font-size="22" fill="currentColor" text-anchor="middle">
+    <text x="200" y="56">N</text>
+    <text x="348" y="208">E</text>
+    <text x="200" y="362">S</text>
+    <text x="52" y="208">W</text>
+  </g>
+
+  <!-- 8-point star -->
+  <g stroke="currentColor" stroke-width="1">
+    <path d="M200 70 L214 186 L200 200 L186 186 Z" fill="currentColor" opacity="0.9" />
+    <path d="M200 330 L186 214 L200 200 L214 214 Z" fill="none" />
+    <path d="M330 200 L214 214 L200 200 L214 186 Z" fill="currentColor" opacity="0.9" />
+    <path d="M70 200 L186 186 L200 200 L186 214 Z" fill="none" />
+    <g opacity="0.55">
+      <path d="M292 108 L213 187 L200 200 L209 178 Z" fill="currentColor" />
+      <path d="M108 292 L187 213 L200 200 L191 222 Z" fill="none" />
+      <path d="M292 292 L213 213 L200 200 L222 209 Z" fill="none" />
+      <path d="M108 108 L187 187 L200 200 L178 191 Z" fill="currentColor" />
+    </g>
+  </g>
+
+  <!-- needle: cinnabar, rotated by JS -->
+  {needle && (
+    <g data-compass-needle style="transform-origin: 200px 200px;">
+      <path d="M200 92 L212 200 L200 214 L188 200 Z" class="fill-accent" />
+      <path d="M200 308 L188 200 L200 186 L212 200 Z" class="fill-accent" opacity="0.32" />
+      <circle cx="200" cy="200" r="7" class="fill-accent" />
+      <circle cx="200" cy="200" r="2.6" fill="var(--color-cream)" />
+    </g>
+  )}
+</svg>

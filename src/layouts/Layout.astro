@@ -1,16 +1,23 @@
 ---
 import '../styles/global.css';
 import { getLocaleFromUrl, localizePath, useTranslations, locales, defaultLocale } from '../i18n/utils';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
 }
 
 const locale = getLocaleFromUrl(Astro.url);
 const t = useTranslations(locale);
 
-const { title = t('site.title'), description = t('site.description') } = Astro.props;
+const {
+  title = t('site.title'),
+  description = t('site.description'),
+  ogImage = '/Images/hero-chart.png',
+} = Astro.props;
 
 const SITE = 'https://bearingbridge.ai';
 
@@ -31,7 +38,7 @@ const xDefaultHref = SITE + (xDefaultPath === '/' ? '' : xDefaultPath);
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -40,11 +47,101 @@ const xDefaultHref = SITE + (xDefaultPath === '/' ? '' : xDefaultPath);
       <link rel="alternate" hreflang={lang} href={href} />
     ))}
     <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
+
+    <meta name="theme-color" content="#f3e9d8" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BearingBridge AI" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={SITE + ogImage} />
+    <meta property="og:locale" content={locale === 'fr' ? 'fr_FR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={SITE + ogImage} />
+
+    <link rel="preload" href="/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/fraunces-italic.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin />
+
+    <slot name="head" />
   </head>
   <body>
     <a href="#main" class="sr-only focus:not-sr-only">{t('skipLink')}</a>
+    <Header />
     <main id="main">
       <slot />
     </main>
+    <Footer />
+
+    <script>
+      // Scroll-reveal: any [data-reveal] element fades in once when entering
+      // the viewport. Stagger inside a [data-reveal-group] is automatic.
+      const revealed = (el: Element) => el.classList.add('is-revealed');
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            revealed(e.target);
+            io.unobserve(e.target);
+          }
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' },
+      );
+
+      document.querySelectorAll('[data-reveal-group]').forEach((group) => {
+        group.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el, i) => {
+          el.style.setProperty('--reveal-delay', String(i));
+        });
+      });
+      document.querySelectorAll('[data-reveal], [data-draw]').forEach((el) => io.observe(el));
+
+      // Animated counters: <span data-count-to="25">0</span>
+      const cio = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            cio.unobserve(e.target);
+            const el = e.target as HTMLElement;
+            const target = Number(el.dataset.countTo ?? '0');
+            const suffix = el.dataset.countSuffix ?? '';
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              el.textContent = target + suffix;
+              continue;
+            }
+            const dur = 1400;
+            const start = performance.now();
+            const tick = (now: number) => {
+              const p = Math.min((now - start) / dur, 1);
+              const eased = 1 - Math.pow(1 - p, 3);
+              el.textContent = Math.round(eased * target) + suffix;
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          }
+        },
+        { threshold: 0.6 },
+      );
+      document.querySelectorAll('[data-count-to]').forEach((el) => cio.observe(el));
+
+      // Magnetic primary CTAs: subtle pull toward the cursor (pointer devices).
+      if (matchMedia('(pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
+          el.addEventListener('mousemove', (ev) => {
+            const r = el.getBoundingClientRect();
+            const x = ev.clientX - r.left - r.width / 2;
+            const y = ev.clientY - r.top - r.height / 2;
+            el.style.transform = `translate(${x * 0.18}px, ${y * 0.3}px)`;
+          });
+          el.addEventListener('mouseleave', () => {
+            el.style.transition = 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+            el.style.transform = '';
+            setTimeout(() => (el.style.transition = ''), 500);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

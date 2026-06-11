@@ -1,0 +1,703 @@
+---
+/**
+ * PilotValidationDashboard — the hero's animated "validated pilot" card.
+ *
+ * A miniature pilot-validation UI: a pilot is tested against success and
+ * kill criteria agreed in advance (every criterion line is visible before
+ * any data draws), survives a genuine near-miss on the kill metric, is
+ * validated, and the work continues — build, then anchor.
+ *
+ * The markup ships in its FINAL state: with JS disabled or
+ * prefers-reduced-motion, the complete arc is legible immediately.
+ * The script rewinds the card and replays the ~10.6s timeline once when
+ * it scrolls into view (IntersectionObserver, threshold 0.5).
+ */
+---
+
+<div
+  class="pv-card is-in is-fixed is-validated is-stamped is-docked is-build is-anchor is-typed is-linked is-done w-full max-w-[460px] justify-self-center lg:justify-self-end"
+  id="pv-card"
+>
+  <button class="pv-replay" type="button" hidden aria-label="Replay the pilot dashboard animation">↺</button>
+
+  <div
+    class="pv-body"
+    role="img"
+    aria-label="Example pilot dashboard: a pilot validated against success and kill criteria agreed in advance, now scaling to production with the client team trained."
+  >
+    <div class="pv-decor" aria-hidden="true">
+      <header class="pv-head">
+        <div>
+          <p class="pv-kicker">Pilot 07</p>
+          <p class="pv-title font-display">Invoice triage agent</p>
+        </div>
+        <span class="pv-chip">
+          <span class="pv-chip-a">Crossing · Week 5 of 8</span>
+          <span class="pv-chip-b">Validated · Week 6 of 8</span>
+        </span>
+      </header>
+      <p class="pv-agreed">Success &amp; kill criteria agreed before kickoff — 12 May</p>
+
+      <div class="pv-rows">
+        <!-- Row 1 — task accuracy: clears its target near the end -->
+        <div class="pv-row is-validated">
+          <p class="pv-name">Task accuracy</p>
+          <p class="pv-crit">criterion ≥ 95%</p>
+          <p class="pv-val"><span class="pv-val-num">95.4%</span></p>
+          <p class="pv-note"><span class="pv-check">✓</span> validated</p>
+          <svg class="pv-spark" viewBox="0 0 90 32" fill="none">
+            <line class="pv-axis" x1="0" y1="31.4" x2="90" y2="31.4" />
+            <line class="pv-th" x1="0" y1="9.8" x2="90" y2="9.8" />
+            <path class="pv-line" pathLength="1" d="M0 24 L10 22.5 L20 23 L30 19.5 L40 17 L50 17.8 L60 13.5 L70 11.5 L78 9.8 L84 9.2 L90 8.6" />
+          </svg>
+        </div>
+
+        <!-- Row 2 — cost per task: clears its ceiling first -->
+        <div class="pv-row is-validated">
+          <p class="pv-name">Cost per task</p>
+          <p class="pv-crit">criterion ≤ $0.06</p>
+          <p class="pv-val"><span class="pv-val-num">$0.041</span></p>
+          <p class="pv-note"><span class="pv-check">✓</span> validated</p>
+          <svg class="pv-spark" viewBox="0 0 90 32" fill="none">
+            <line class="pv-axis" x1="0" y1="31.4" x2="90" y2="31.4" />
+            <line class="pv-th" x1="0" y1="14.4" x2="90" y2="14.4" />
+            <path class="pv-line" pathLength="1" d="M0 8.2 L12 10 L22 9 L32 13 L44 17.5 L56 20.5 L70 22.8 L90 24.3" />
+          </svg>
+        </div>
+
+        <!-- Row 3 — handling time: clears its target second -->
+        <div class="pv-row is-validated">
+          <p class="pv-name">Handling time</p>
+          <p class="pv-crit">criterion ≥ −25% vs. baseline</p>
+          <p class="pv-val"><span class="pv-val-num">−38%</span></p>
+          <p class="pv-note"><span class="pv-check">✓</span> validated</p>
+          <svg class="pv-spark" viewBox="0 0 90 32" fill="none">
+            <line class="pv-axis" x1="0" y1="31.4" x2="90" y2="31.4" />
+            <line class="pv-th" x1="0" y1="18.2" x2="90" y2="18.2" />
+            <path class="pv-line" pathLength="1" d="M0 7 L12 9 L24 11.5 L36 14.8 L48 17.5 L60 20.5 L72 22.5 L82 23.8 L90 24.6" />
+          </svg>
+        </div>
+
+        <!-- Row 4 — THE TENSION METRIC: near-miss, fix, recovery -->
+        <div class="pv-row pv-row-kill is-validated">
+          <p class="pv-name">Error escalation rate</p>
+          <p class="pv-crit">kill ceiling ≥ 2.0%</p>
+          <p class="pv-val"><span class="pv-val-num">1.2%</span></p>
+          <p class="pv-note"><span class="pv-check">✓</span> validated</p>
+          <svg class="pv-spark" viewBox="0 0 90 32" fill="none">
+            <line class="pv-axis" x1="0" y1="31.4" x2="90" y2="31.4" />
+            <line class="pv-th" x1="0" y1="9.5" x2="90" y2="9.5" />
+            <text class="pv-th-label" x="1.5" y="6.6">KILL ≥ 2.0%</text>
+            <path class="pv-line" pathLength="1" d="M0 25.9 L10 24.8 L20 23 L30 20.8 L38 18.5 L46 15.5 L52 13.6 L58 12.2 L64 12.6 L70 14.2 L78 16.8 L84 18.9 L90 20.4" />
+          </svg>
+          <p class="pv-fix">wk 4: prompt + routing fix</p>
+        </div>
+      </div>
+
+      <!-- Phase tracker: the method continues past validation -->
+      <div class="pv-phases">
+        <span class="pv-phase" data-p="bearings">Bearings</span>
+        <span class="pv-phase" data-p="chart">Chart</span>
+        <span class="pv-phase" data-p="crossing">Crossing</span>
+        <span class="pv-phase" data-p="build">Build</span>
+        <span class="pv-phase" data-p="anchor">Anchor</span>
+      </div>
+
+      <!-- Build & Anchor progress: survival is not the end -->
+      <div class="pv-prog">
+        <div class="pv-prog-row pv-prog-build">
+          <p class="pv-prog-name">Production rollout — Finance BU</p>
+          <div class="pv-bar"><span class="pv-bar-fill"></span></div>
+          <p class="pv-prog-note">integrations · security review <span class="pv-check">✓</span></p>
+        </div>
+        <div class="pv-prog-row pv-prog-anchor">
+          <p class="pv-prog-name">Team trained · <span class="pv-ops">31</span> operators onboarded</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pv-foot">
+    <p class="pv-foot-default" aria-hidden="true">Reviewed weekly with client steering.</p>
+    <p class="pv-foot-lesson">
+      <span class="pv-typed">Proven against criteria set in advance. Now in production.</span>
+      <a class="pv-foot-link" href="/azimuth">See the method →</a>
+    </p>
+  </div>
+
+  <div class="pv-stamp" aria-hidden="true">
+    <div class="pv-stamp-pos">
+      <div class="pv-stamp-box">
+        <div class="pv-stamp-inner">
+          <span class="pv-stamp-title">Validated — Scaling to production</span>
+          <span class="pv-stamp-sub">evidence acquired · criteria met 4 / 4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <svg class="pv-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="pv-rough" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" />
+      </filter>
+    </defs>
+  </svg>
+</div>
+
+<style>
+  .pv-card {
+    position: relative;
+    background: var(--color-paper);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pv-card.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ------------------------------------------------ header */
+  .pv-body {
+    padding: 18px 22px 4px;
+  }
+  .pv-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pv-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+  }
+  .pv-title {
+    margin-top: 4px;
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--color-ink);
+  }
+  .pv-chip {
+    display: grid;
+    flex-shrink: 0;
+    margin-top: 2px;
+    padding: 5px 9px;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 35%, transparent);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    color: var(--color-ink);
+    transition: border-color 0.45s ease;
+  }
+  .pv-chip > span {
+    grid-area: 1 / 1;
+    transition: opacity 0.45s ease;
+  }
+  .pv-chip-b {
+    opacity: 0;
+  }
+  /* the only moment green touches a non-checkmark element */
+  .is-validated .pv-chip {
+    border-color: var(--color-success);
+  }
+  .is-validated .pv-chip-a { opacity: 0; }
+  .is-validated .pv-chip-b { opacity: 1; }
+
+  .pv-agreed {
+    margin-top: 9px;
+    font-size: 11.5px;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  }
+
+  /* ------------------------------------------------ metric rows */
+  .pv-rows {
+    margin-top: 12px;
+  }
+  .pv-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 90px;
+    column-gap: 14px;
+    row-gap: 1px;
+    align-items: center;
+    padding: 9px 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .pv-name {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 13px;
+    color: var(--color-ink);
+  }
+  .pv-crit {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 11px;
+    color: color-mix(in srgb, var(--color-ink) 50%, transparent);
+  }
+  .pv-val {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+    color: var(--color-ink);
+  }
+  .pv-val-num {
+    display: inline-block;
+    min-width: 5.2ch;
+    text-align: right;
+  }
+  .pv-note {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    font-size: 10px;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+  .pv-row.is-validated .pv-note {
+    opacity: 1;
+  }
+  .pv-check {
+    font-size: 10.5px;
+    color: var(--color-success);
+  }
+  .pv-fix {
+    grid-column: 1 / -1;
+    margin-top: 3px;
+    font-size: 10.5px;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+  }
+  .is-fixed .pv-fix {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ------------------------------------------------ sparklines */
+  .pv-spark {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    display: block;
+    width: 90px;
+    height: 32px;
+    overflow: visible;
+  }
+  .pv-axis {
+    stroke: color-mix(in srgb, var(--color-ink) 15%, transparent);
+    stroke-width: 1;
+  }
+  .pv-line {
+    stroke: color-mix(in srgb, var(--color-ink) 60%, transparent);
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+  }
+  .pv-row-kill .pv-line {
+    stroke: var(--color-ink);
+  }
+  /* every criterion line is visible from t=0 — the bar exists before the results */
+  .pv-th {
+    stroke: var(--color-accent);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    opacity: 0.55;
+  }
+  .pv-th-label {
+    font-family: var(--font-sans);
+    font-size: 5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    fill: var(--color-accent);
+  }
+
+  /* ------------------------------------------------ phase tracker */
+  .pv-phases {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 2px;
+    padding: 10px 0 8px;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .pv-phase {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  }
+  .pv-phase::after {
+    content: '';
+    display: block;
+    height: 2px;
+    margin-top: 3px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* CROSSING active by default; the underline advances with the story */
+  .pv-phase[data-p='crossing'] { color: var(--color-ink); }
+  .pv-phase[data-p='crossing']::after { transform: scaleX(1); }
+  .is-build .pv-phase[data-p='crossing']::after { transform: scaleX(0); transform-origin: right; }
+  .is-build .pv-phase[data-p='build'] { color: var(--color-ink); }
+  .is-build .pv-phase[data-p='build']::after { transform: scaleX(1); }
+  .is-anchor .pv-phase[data-p='build']::after { transform: scaleX(0); transform-origin: right; }
+  .is-anchor .pv-phase[data-p='anchor'] { color: var(--color-ink); }
+  .is-anchor .pv-phase[data-p='anchor']::after { transform: scaleX(1); }
+
+  /* ------------------------------------------------ build & anchor progress */
+  .pv-prog {
+    padding: 2px 0 10px;
+  }
+  .pv-prog-row {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
+  .is-build .pv-prog-build,
+  .is-anchor .pv-prog-anchor {
+    opacity: 1;
+    transform: none;
+  }
+  .pv-prog-build {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 14px;
+    row-gap: 5px;
+    align-items: center;
+    padding: 7px 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .pv-prog-name {
+    font-size: 12px;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+  .pv-bar {
+    grid-column: 1 / -1;
+    height: 3px;
+    background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  }
+  .pv-bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .is-build .pv-bar-fill {
+    transform: scaleX(0.64);
+  }
+  .pv-prog-note {
+    grid-column: 1 / -1;
+    font-size: 10.5px;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  }
+  .pv-prog-anchor {
+    padding: 7px 0 0;
+  }
+
+  /* ------------------------------------------------ footer */
+  .pv-foot {
+    display: grid;
+    min-height: 84px;
+    align-items: start;
+    padding: 13px 22px 15px;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .pv-foot > p {
+    grid-area: 1 / 1;
+  }
+  .pv-foot-default {
+    font-size: 12px;
+    color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+    transition: opacity 0.4s ease;
+  }
+  .is-typed .pv-foot-default {
+    opacity: 0;
+  }
+  .pv-foot-lesson {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--color-ink) 85%, transparent);
+    visibility: hidden;
+  }
+  .is-typed .pv-foot-lesson {
+    visibility: visible;
+  }
+  .pv-foot-link {
+    display: block;
+    width: fit-content;
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-decoration: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .pv-foot-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .is-linked .pv-foot-link {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* ------------------------------------------------ the stamp */
+  .pv-stamp {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .is-stamped .pv-stamp {
+    animation: pv-stamp-land 0.42s cubic-bezier(0.45, 0, 0.8, 0.4) forwards;
+  }
+  @keyframes pv-stamp-land {
+    0%   { opacity: 0;    transform: scale(1.6); }
+    76%  { opacity: 0.92; transform: scale(1); }
+    88%  { opacity: 0.92; transform: scale(1) translateY(1px); }
+    100% { opacity: 0.92; transform: scale(1); }
+  }
+  /* after the beat, the stamp ghosts and docks up so the story stays legible */
+  .pv-stamp-pos {
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+  }
+  .is-docked .pv-stamp-pos {
+    opacity: 0.35;
+    transform: translateY(-190px) scale(0.8);
+  }
+  .pv-stamp-box {
+    border: 2px solid var(--color-accent);
+    padding: 5px;
+    transform: rotate(-8deg);
+    filter: url(#pv-rough);
+    /* pressed-ink patches: noise-alpha mask */
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0.45 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23m)'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0.45 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23m)'/%3E%3C/svg%3E");
+  }
+  .pv-stamp-inner {
+    border: 2px solid var(--color-accent);
+    padding: 10px 16px;
+    text-align: center;
+    color: var(--color-accent);
+  }
+  .pv-stamp-title {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .pv-stamp-sub {
+    display: block;
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  /* ------------------------------------------------ replay */
+  .pv-replay {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 30%, transparent);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+  .pv-replay:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .pv-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  /* ------------------------------------------------ mobile */
+  @media (max-width: 480px) {
+    .pv-body { padding: 15px 16px 4px; }
+    .pv-title { font-size: 18px; }
+    .pv-chip { font-size: 9px; padding: 4px 7px; }
+    .pv-name { font-size: 12px; }
+    .pv-val { font-size: 14px; }
+    .pv-row { column-gap: 10px; grid-template-columns: minmax(0, 1fr) auto 76px; }
+    .pv-spark { width: 76px; }
+    .pv-phase { font-size: 8px; letter-spacing: 0.08em; }
+    .pv-foot { padding: 12px 16px 14px; min-height: 96px; }
+    .pv-stamp-title { font-size: 10.5px; }
+    .pv-stamp-sub { font-size: 8.5px; }
+    .pv-stamp-inner { padding: 8px 10px; }
+    .is-docked .pv-stamp-pos { transform: translateY(-200px) scale(0.85); }
+  }
+</style>
+
+<script>
+  const card = document.getElementById('pv-card');
+
+  if (card) {
+    const STATE = ['is-in', 'is-fixed', 'is-validated', 'is-stamped', 'is-docked', 'is-build', 'is-anchor', 'is-typed', 'is-linked', 'is-done'];
+    const LESSON = 'Proven against criteria set in advance. Now in production.';
+    const TYPE_START = 8.5;
+    const CHAR = 0.025; // 25ms per character
+    const TYPE_END = TYPE_START + LESSON.length * CHAR;
+    const TOTAL = TYPE_END + 0.55;
+    const PEAK = 0.62; // row-4 path fraction at the 1.8% near-miss peak
+    // path fractions (≈ x/90) where each line crosses its criterion → ✓
+    const CROSS = [0.87, 0.4, 0.55];
+
+    const rows = Array.from(card.querySelectorAll<HTMLElement>('.pv-row'));
+    const lines = Array.from(card.querySelectorAll<SVGPathElement>('.pv-line'));
+    const vals = Array.from(card.querySelectorAll<HTMLElement>('.pv-val-num'));
+    const ops = card.querySelector<HTMLElement>('.pv-ops');
+    const typed = card.querySelector<HTMLElement>('.pv-typed');
+    const replay = card.querySelector<HTMLButtonElement>('.pv-replay');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // With reduced motion (or unexpected markup) the card stays in the
+    // final validated state it shipped with.
+    if (!reduced && rows.length === 4 && lines.length === 4 && vals.length === 4 && ops && typed) {
+      const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+      const seg = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
+      const easeOut = (p: number) => 1 - Math.pow(1 - p, 3);
+      const easeIO = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+
+      let rafId = 0;
+
+      const setVals = (d: number, v4: number) => {
+        vals[0].textContent = (90.5 + 4.9 * d).toFixed(1) + '%';
+        vals[1].textContent = '$' + (0.072 - 0.031 * d).toFixed(3);
+        vals[2].textContent = '−' + Math.round(38 * d) + '%';
+        vals[3].textContent = v4.toFixed(1) + '%';
+      };
+
+      const reset = () => {
+        STATE.forEach((c) => card.classList.remove(c));
+        rows.forEach((r) => r.classList.remove('is-validated'));
+        lines.forEach((l) => (l.style.strokeDashoffset = '1'));
+        setVals(0, 0.8);
+        ops.textContent = '0';
+        typed.textContent = '';
+        replay?.setAttribute('hidden', '');
+      };
+
+      const render = (t: number) => {
+        // t=0.6–4.5 — the pilot runs: lines draw, values tick, criteria clear.
+        const d = easeIO(seg(t, 0.6, 4.5));
+        for (let i = 0; i < 3; i++) {
+          lines[i].style.strokeDashoffset = String(1 - d);
+          if (d >= CROSS[i]) rows[i].classList.add('is-validated');
+        }
+
+        // Row 4: climbs to the 1.8% near-miss peak (t≈3.2), then the fix
+        // bends it back down to 1.2%.
+        const climb = easeIO(seg(t, 0.6, 3.2));
+        const recover = easeIO(seg(t, 3.2, 4.5));
+        const draw4 = t < 3.2 ? PEAK * climb : PEAK + (1 - PEAK) * recover;
+        lines[3].style.strokeDashoffset = String(1 - draw4);
+        const v4 = t < 3.2 ? 0.8 + 1.0 * climb : 1.8 - 0.6 * recover;
+        setVals(d, v4);
+
+        if (t >= 3.3) card.classList.add('is-fixed');
+        // Survival confirmed: row 4 settles, ✓, 250ms stillness, then the chip.
+        if (t >= 4.55) rows[3].classList.add('is-validated');
+        if (t >= 5.0) card.classList.add('is-validated');
+        if (t >= 5.3) card.classList.add('is-stamped');
+        // Keep building: the stamp ghosts up, the tracker advances.
+        if (t >= 6.1) card.classList.add('is-build');
+        if (t >= 6.5) card.classList.add('is-docked');
+        if (t >= 7.8) {
+          card.classList.add('is-anchor');
+          ops.textContent = String(Math.round(31 * easeOut(seg(t, 7.8, 8.5))));
+        }
+        if (t >= TYPE_START) {
+          card.classList.add('is-typed');
+          const n = Math.min(LESSON.length, Math.floor((t - TYPE_START) / CHAR));
+          if ((typed.textContent ?? '').length !== n) typed.textContent = LESSON.slice(0, n);
+        }
+        if (t >= TYPE_END + 0.15) card.classList.add('is-linked');
+      };
+
+      const play = () => {
+        reset();
+        // double rAF so the rewound state paints before the arrival transition
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            card.classList.add('is-in');
+            const t0 = performance.now();
+            const frame = (now: number) => {
+              const t = (now - t0) / 1000;
+              render(t);
+              if (t < TOTAL) {
+                rafId = requestAnimationFrame(frame);
+              } else {
+                render(TOTAL);
+                card.classList.add('is-done');
+                replay?.removeAttribute('hidden');
+              }
+            };
+            rafId = requestAnimationFrame(frame);
+          }),
+        );
+      };
+
+      replay?.addEventListener('click', () => {
+        cancelAnimationFrame(rafId);
+        play();
+      });
+
+      // Rewind immediately so the final state never flashes, then wait
+      // for the card to be half in view. Plays once.
+      reset();
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            io.disconnect();
+            play();
+          }
+        },
+        { threshold: 0.5 },
+      );
+      io.observe(card);
+    }
+  }
+</script>

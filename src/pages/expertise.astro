@@ -1,0 +1,148 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const clusters = [
+  {
+    id: 'growth',
+    label: 'Customer & Growth',
+    domains: ['Marketing', 'Communication', 'Media', 'eCommerce'],
+    buyer: 'CMO · CCO · eCommerce Director',
+    items: [
+      { title: 'AI content production at scale', body: 'Editorial and product content pipelines that hold brand voice across markets and languages.' },
+      { title: 'Campaign and media-mix intelligence', body: 'Decision support that earns its seat in the planning meeting — not another dashboard nobody opens.' },
+      { title: 'Conversational commerce', body: 'Assistants that close, not chatbots that deflect.' },
+      { title: 'Marketplace operations', body: 'Including China platforms — Tmall, Douyin, RED — where Western playbooks don’t transfer.' },
+    ],
+  },
+  {
+    id: 'ops',
+    label: 'Operations & People',
+    domains: ['Supply Chain', 'HR'],
+    buyer: 'CSCO · CHRO · COO',
+    items: [
+      { title: 'Demand forecasting and sourcing intelligence', body: 'Models judged on forecast error and working capital, not demo charm.' },
+      { title: 'Logistics copilots', body: 'Assistants embedded in the workflows your planners already live in.' },
+      { title: 'Recruiting automation and HR service agents', body: 'Faster cycles without losing the judgment calls that matter.' },
+      { title: 'Internal AI upskilling programs', body: 'Training that changes daily work, measured by usage — not attendance.' },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Expertise — functions, not buzzwords | BearingBridge AI"
+  description="We specialize where our founder spent 25 years operating: Marketing, Communication, Media, eCommerce, Supply Chain and HR — the functions that touch revenue and people."
+>
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto max-w-5xl px-5 pb-20 pt-40 text-center sm:px-8 lg:pt-52">
+      <p class="kicker justify-center" data-reveal>Expertise</p>
+      <h1 class="font-display mt-6 text-4xl leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl" data-reveal style="--reveal-delay: 1">
+        Functions, not <span class="accent-word">buzzwords</span>.
+      </h1>
+      <p class="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-ink/70" data-reveal style="--reveal-delay: 2">
+        We specialize where our founder spent 25 years operating: the functions that touch revenue
+        and the functions that touch people.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= CLUSTER TABS ========================= -->
+  <section class="bg-paper">
+    <div class="mx-auto max-w-5xl px-5 py-24 sm:px-8 lg:py-32">
+      <div role="tablist" aria-label="Expertise clusters" class="relative grid grid-cols-2 border border-ink/20" data-reveal>
+        <span id="tab-indicator" class="absolute bottom-0 left-0 top-0 w-1/2 bg-ink transition-transform duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]" aria-hidden="true"></span>
+        {clusters.map((c, i) => (
+          <button
+            id={`tab-${c.id}`}
+            role="tab"
+            type="button"
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls={`panel-${c.id}`}
+            data-tab-index={i}
+            class="tab-btn relative z-10 px-4 py-5 font-display text-lg transition-colors duration-300 sm:text-2xl"
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {clusters.map((c, i) => (
+        <div
+          id={`panel-${c.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${c.id}`}
+          class={`tab-panel pt-12 ${i === 0 ? '' : 'hidden'}`}
+        >
+          <div class="flex flex-wrap items-center gap-3">
+            {c.domains.map((d) => (
+              <span class="border border-accent/40 bg-cream-soft px-4 py-1.5 font-display text-lg italic text-accent">{d}</span>
+            ))}
+            <span class="ml-auto text-xs uppercase tracking-kicker text-ink/50">Buyer: {c.buyer}</span>
+          </div>
+          <div class="mt-10 grid gap-6 sm:grid-cols-2">
+            {c.items.map((item, j) => (
+              <div class="card-lift border border-ink/15 bg-paper p-7">
+                <span class="numeral text-2xl">{String(j + 1).padStart(2, '0')}</span>
+                <h3 class="font-display mt-3 text-xl text-ink">{item.title}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink/65">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ========================= WHY THIS FOCUS ========================= -->
+  <section class="grain relative bg-cream">
+    <div class="relative z-10 mx-auto max-w-3xl px-5 py-24 text-center sm:px-8 lg:py-28" data-reveal>
+      <p class="kicker justify-center">Why this focus</p>
+      <h2 class="font-display mt-6 text-3xl leading-tight text-ink sm:text-4xl">
+        Generic AI consulting starts every engagement from <span class="accent-word">zero</span>.
+      </h2>
+      <p class="mt-6 text-lg leading-relaxed text-ink/70">
+        We start from pattern libraries: we know these functions’ workflows, benchmarks, and failure
+        modes, on both sides of the world. Assessments go deeper, pilots start smarter, training lands harder.
+      </p>
+      <div class="mt-10">
+        <a href="/contact" class="btn btn-primary" data-magnetic>
+          <span>Talk about your function</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+    const panels = document.querySelectorAll<HTMLElement>('.tab-panel');
+    const indicator = document.getElementById('tab-indicator');
+
+    const paint = () => {
+      tabs.forEach((t) => {
+        const selected = t.getAttribute('aria-selected') === 'true';
+        t.classList.toggle('text-cream', selected);
+        t.classList.toggle('text-ink/60', !selected);
+      });
+    };
+    paint();
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const i = Number(tab.dataset.tabIndex ?? 0);
+        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        panels.forEach((p, j) => p.classList.toggle('hidden', j !== i));
+        if (indicator) indicator.style.transform = `translateX(${i * 100}%)`;
+        paint();
+        const active = panels[i];
+        if (active) {
+          active.animate(
+            [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }],
+            { duration: 450, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+          );
+        }
+      });
+    });
+  </script>
+</Layout>

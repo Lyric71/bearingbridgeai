@@ -1,0 +1,126 @@
+---
+import { getLocaleFromUrl, localizePath, useTranslations } from '../i18n/utils';
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const path = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
+
+const links = [
+  { href: '/azimuth', label: t('nav.method') },
+  { href: '/services', label: t('nav.services') },
+  { href: '/expertise', label: t('nav.expertise') },
+  { href: '/insights', label: t('nav.insights') },
+  { href: '/about', label: t('nav.about') },
+].map((l) => ({ ...l, href: localizePath(l.href, locale) }));
+
+const contactHref = localizePath('/contact', locale);
+const homeHref = localizePath('/', locale);
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent"
+>
+  <div id="scroll-progress" class="absolute inset-x-0 top-0 h-[2px] bg-accent"></div>
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4 sm:px-8">
+    <a href={homeHref} class="group flex items-baseline gap-1" aria-label="BearingBridge AI — home">
+      <span class="font-display text-xl tracking-tight text-ink">BearingBridge</span>
+      <span class="font-display text-xl italic text-accent transition-transform duration-300 group-hover:-rotate-6">AI</span>
+    </a>
+
+    <nav aria-label={t('nav.aria.primary')} class="hidden items-center gap-7 lg:flex">
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class="link-rule text-[0.95rem] font-medium text-ink/75 hover:text-ink"
+          aria-current={isActive(l.href) ? 'page' : undefined}
+        >
+          {l.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href={contactHref} class="btn btn-primary hidden !px-5 !py-2.5 !text-sm lg:inline-flex">
+        <span>{t('nav.bookCall')}</span>
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="relative z-[70] flex h-10 w-10 flex-col items-center justify-center gap-[5px] lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label={t('nav.menu')}
+      >
+        <span class="menu-bar block h-[2px] w-6 bg-ink transition-transform duration-300"></span>
+        <span class="menu-bar block h-[2px] w-6 bg-ink transition-opacity duration-300"></span>
+        <span class="menu-bar block h-[2px] w-6 bg-ink transition-transform duration-300"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Full-screen mobile menu -->
+<div
+  id="mobile-menu"
+  class="invisible fixed inset-0 z-[60] bg-cream opacity-0 transition-all duration-400 lg:hidden"
+  aria-hidden="true"
+>
+  <div class="meridians grain relative flex h-full flex-col justify-between overflow-y-auto px-6 pb-10 pt-28">
+    <nav aria-label={t('nav.aria.primary')} class="flex flex-col gap-1">
+      {[{ href: homeHref, label: t('nav.home') }, ...links].map((l, i) => (
+        <a
+          href={l.href}
+          class="mobile-link border-b border-ink/10 py-4 font-display text-3xl text-ink opacity-0 transition-all duration-500"
+          style={`transition-delay: ${80 + i * 60}ms`}
+          aria-current={isActive(l.href) ? 'page' : undefined}
+        >
+          <span class="mr-3 numeral text-base">{String(i + 1).padStart(2, '0')}</span>
+          {l.label}
+        </a>
+      ))}
+    </nav>
+    <a href={contactHref} class="btn btn-primary mobile-link mt-8 w-full opacity-0 transition-all delay-500 duration-500">
+      <span>{t('nav.bookCall')}</span>
+      <span class="btn-arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<script>
+  const header = document.getElementById('site-header');
+  const progress = document.getElementById('scroll-progress');
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  const onScroll = () => {
+    if (!header || !progress) return;
+    header.classList.toggle('is-scrolled', window.scrollY > 24);
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    menu?.setAttribute('aria-hidden', String(open));
+    menu?.classList.toggle('invisible', open);
+    menu?.classList.toggle('opacity-0', open);
+    document.body.style.overflow = open ? '' : 'hidden';
+    const bars = toggle.querySelectorAll('.menu-bar');
+    bars[0]?.classList.toggle('translate-y-[7px]', !open);
+    bars[0]?.classList.toggle('rotate-45', !open);
+    bars[1]?.classList.toggle('opacity-0', !open);
+    bars[2]?.classList.toggle('-translate-y-[7px]', !open);
+    bars[2]?.classList.toggle('-rotate-45', !open);
+    menu?.querySelectorAll('.mobile-link').forEach((el) => {
+      el.classList.toggle('opacity-0', open);
+      el.classList.toggle('translate-y-3', open);
+    });
+  });
+</script>

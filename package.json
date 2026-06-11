@@ -6,12 +6,33 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --host 127.0.0.1",
+    "prebuild": "node scripts/generate-llms-full.mjs",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "gen": "node scripts/generate-image.mjs",
+    "gen:edit": "node scripts/generate-image-edit.mjs",
+    "img": "node scripts/optimize-image.mjs",
+    "img:batch": "node scripts/optimize-images-batch.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs",
+    "indexnow": "node scripts/submit-indexnow.mjs",
+    "llms:full": "node scripts/generate-llms-full.mjs"
   },
   "dependencies": {
-    "astro": "^6.4.6"
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/vercel": "^10.0.8",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.4.6",
+    "dotenv": "^17.4.2",
+    "resend": "^6.12.4",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0",
+    "prettier": "^3.8.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "sharp": "^0.35.1"
   }
 }

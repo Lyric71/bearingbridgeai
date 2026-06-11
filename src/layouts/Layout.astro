@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+import { getLocaleFromUrl, localizePath, useTranslations, locales, defaultLocale } from '../i18n/utils';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const locale = getLocaleFromUrl(Astro.url);
+const t = useTranslations(locale);
+
+const { title = t('site.title'), description = t('site.description') } = Astro.props;
+
+const SITE = 'https://bearingbridge.ai';
+
+// Canonical convention: no trailing slash except root.
+const path = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/$/, '');
+const canonical = SITE + (path === '/' ? '' : path);
+
+// hreflang alternates resolved through the slug map, never blind prefixing.
+const alternates = locales.map((loc) => {
+  const locPath = localizePath(path, loc);
+  return { lang: loc, href: SITE + (locPath === '/' ? '' : locPath) };
+});
+const xDefaultPath = localizePath(path, defaultLocale);
+const xDefaultHref = SITE + (xDefaultPath === '/' ? '' : xDefaultPath);
+---
+
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates.map(({ lang, href }) => (
+      <link rel="alternate" hreflang={lang} href={href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
+  </head>
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only">{t('skipLink')}</a>
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

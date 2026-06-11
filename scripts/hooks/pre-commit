@@ -1,0 +1,10 @@
+#!/bin/bash
+# Auto-optimize any staged raster images under public/Images/.
+# Installed by `npm run hooks:install`. See scripts/pre-commit-optimize-images.mjs.
+
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+node scripts/pre-commit-optimize-images.mjs

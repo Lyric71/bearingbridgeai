@@ -56,10 +56,6 @@ export const ui = {
     'footer.dataNote':
       'Your data never transits to China unless you explicitly choose a China-hosted deployment.',
     'footer.regions': 'North Asia · Southeast Asia · Middle East · Europe',
-    'footer.newsletter.title': 'The East-West Briefing',
-    'footer.newsletter.sub': 'Monthly. What moved in AI on both sides of the world — and what it means for you.',
-    'footer.newsletter.placeholder': 'Work email',
-    'footer.newsletter.cta': 'Subscribe',
     'footer.nav': 'Navigate',
     'footer.connect': 'Connect',
   },
@@ -92,10 +88,6 @@ export const ui = {
     'footer.dataNote':
       'Vos données ne transitent jamais par la Chine, sauf si vous optez explicitement pour un hébergement en Chine.',
     'footer.regions': 'Asie du Nord · Asie du Sud-Est · Moyen-Orient · Europe',
-    'footer.newsletter.title': 'The East-West Briefing',
-    'footer.newsletter.sub': 'Chaque mois, ce qui a bougé dans l’IA des deux côtés du monde — et ce que cela change pour vous.',
-    'footer.newsletter.placeholder': 'E-mail professionnel',
-    'footer.newsletter.cta': 'S’abonner',
     'footer.nav': 'Navigation',
     'footer.connect': 'Suivez-nous',
   },

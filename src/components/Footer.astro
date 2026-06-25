@@ -53,33 +53,15 @@ const year = new Date().getFullYear();
         </ul>
       </div>
 
-      <!-- newsletter -->
+      <!-- connect -->
       <div class="lg:col-span-4">
-        <h2 class="kicker !text-cream/50">{t('footer.newsletter.title')}</h2>
-        <p class="mt-5 text-sm leading-relaxed text-cream/60">{t('footer.newsletter.sub')}</p>
-        <form class="mt-5 flex" action="/contact" method="get">
-          <label class="sr-only" for="newsletter-email">{t('footer.newsletter.placeholder')}</label>
-          <input
-            id="newsletter-email"
-            type="email"
-            name="email"
-            placeholder={t('footer.newsletter.placeholder')}
-            class="field flex-1 !border-cream/25 !text-cream placeholder:!text-cream/40 focus:!border-accent focus:!bg-transparent"
-            required
-          />
-          <button type="submit" class="btn btn-primary shrink-0 !px-5 !py-0 !text-sm">
-            <span>{t('footer.newsletter.cta')}</span>
-          </button>
-        </form>
-        <div class="mt-8">
-          <h2 class="kicker !text-cream/50">{t('footer.connect')}</h2>
-          <a
-            href="https://www.linkedin.com/company/bearingbridge-ai"
-            rel="noopener"
-            target="_blank"
-            class="link-rule mt-4 inline-block text-[0.95rem] text-cream/75 hover:text-cream"
-          >LinkedIn ↗</a>
-        </div>
+        <h2 class="kicker !text-cream/50">{t('footer.connect')}</h2>
+        <a
+          href="https://www.linkedin.com/company/bearingbridgeai"
+          rel="noopener"
+          target="_blank"
+          class="link-rule mt-4 inline-block text-[0.95rem] text-cream/75 hover:text-cream"
+        >LinkedIn ↗</a>
       </div>
     </div>
 

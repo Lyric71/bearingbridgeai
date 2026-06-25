@@ -1,0 +1,658 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// ---------------------------------------------------------------------------
+// Article model. Body copy is verbatim; chips/labels are UI chrome.
+// ---------------------------------------------------------------------------
+const sections = [
+  {
+    id: 'language',
+    icon: 'globe',
+    tag: 'Language learning',
+    heading: "Keep it in the language you're studying",
+    intro:
+      "Anyone learning a language has watched NotebookLM start strong in French or Japanese and then quietly drift back to English the second a hard concept shows up. This prompt holds the line. It's also just handy when you'd rather absorb difficult material in a language you think in more naturally.",
+    prompt:
+      'Build a back-and-forth discussion from the uploaded sources, spoken start to finish in [TARGET LANGUAGE]. Hold that language even through the hard parts. Reach for English only when a technical term has no clean equivalent, and say so when you do. Keep it loose, the way two people actually talk on a podcast.',
+    outro:
+      'We lean on it most for foreign-language research papers, where the distance between textbook vocabulary and how experts actually write can be wide enough to trip you up.',
+  },
+  {
+    id: 'decision',
+    icon: 'target',
+    tag: 'Fast decisions',
+    heading: 'Get to the decision',
+    intro:
+      "Picture opening a forty-page report at nine in the morning and needing to act on it before lunch. That's what this one is for. Rather than handing back a summary, it digs out the parts that change what you do: where people are actually struggling, what's going to get in the way, and what the document conveniently left out.",
+    prompt:
+      "Read the uploaded files like you're prepping a brief for an executive who has ten minutes. Skip the warm-up. Give me three short lists. First, what real users are struggling with, with direct quotes. Second, what could block us, whether that's money, staffing, or technical limits. Third, what's missing that should worry us. If my goal isn't clear, stop and ask instead of guessing.",
+    outro:
+      'That last instruction does more than it looks like. Leave it off and the tool will cheerfully pick a focus you never asked for and run with it.',
+  },
+  {
+    id: 'teach',
+    icon: 'bulb',
+    tag: 'Real understanding',
+    heading: 'Make it teach a seventh grader',
+    intro:
+      "There's an old test for whether you really understand something: try explaining it to a twelve-year-old without losing the substance. This prompt puts NotebookLM through that test, and the gaps it exposes are often your own.",
+    prompt:
+      'Explain the uploaded material to a sharp twelve-year-old. Keep the sentences short and assume no background. For each piece, give a one-line plain version, a comparison to something from everyday life, and three difficult words spelled out simply. When a section gets thick, turn it into a quick true-or-false quiz.',
+    outro:
+      "It reads like a study trick for kids, and that's underselling it. We use it to find out whether we actually grasp a subject before we write a word about it.",
+  },
+  {
+    id: 'flopped',
+    icon: 'search',
+    tag: 'Post-mortem',
+    heading: 'Work out why it flopped',
+    intro:
+      'Some attempts just miss the mark, and sitting around guessing why tends to waste an afternoon. Here NotebookLM plays the blunt reviewer. You hand it what you did and the material you were supposed to be working from, and it shows you where the two parted ways. No pep talk. Just the gaps, quoted back at you.',
+    prompt:
+      "Something I tried didn't work and I want to know where it went wrong. Compare what I did against the uploaded sources. Here's the setup. What I tried: [WHAT]. The steps I took: [STEPS]. How it turned out: [RESULT]. What I expected instead: [EXPECTATION]. Show me the steps I skipped, the ideas I missed, and the basics I glossed over, citing the sources as you go. Keep it pointed at next time.",
+    outro:
+      "Fair warning, this one can sting, because it pulls the exact line from your source that you didn't follow and sets it next to what you did. Uncomfortable, and that's the value.",
+  },
+  {
+    id: 'holes',
+    icon: 'alert',
+    tag: 'Critical reading',
+    heading: 'Find the holes in the argument',
+    intro:
+      "Useful when you're reading something you're half inclined to agree with. Instead of nodding along, you get the weak joints laid out, which is the fastest way to stop being fooled by a document that simply sounds confident.",
+    prompt:
+      'Go through the uploaded sources as a skeptical reader. List the main claims, then for each one tell me how well the source actually backs it up: strong evidence, thin evidence, or just asserted. Point out where the logic jumps a step, and flag any claim that would fall apart if one assumption turned out wrong.',
+    outro: 'We run this on vendor white papers and opinion pieces before quoting either.',
+  },
+  {
+    id: 'questions',
+    icon: 'question',
+    tag: 'Active recall',
+    heading: 'Turn it into questions, not answers',
+    intro:
+      'A study favorite that flips the usual setup. Rather than feeding you summaries, the tool quizzes you, which forces you to retrieve what you know instead of rereading it for the fourth time and mistaking familiarity for memory.',
+    prompt:
+      "Using only the uploaded material, write me a set of 15 questions that test whether I understand it, ordered easy to hard. Mix recall questions with ones that make me apply an idea to a new situation. Don't give the answers yet. Wait until I've tried, then grade me and explain what I missed.",
+    outro: '',
+  },
+  {
+    id: 'timeline',
+    icon: 'timeline',
+    tag: 'Sequence',
+    heading: 'Build the timeline',
+    intro:
+      'Long documents bury the sequence of events inside paragraphs, and you lose the thread. This one pulls the order back out so you can see how one thing led to the next.',
+    prompt:
+      'From the uploaded sources, build a chronological timeline of the key events, decisions, or developments. Give each entry a date or rough time marker, a one-line description, and a note on why it mattered. Where the sources disagree on timing or details, say so rather than smoothing it over.',
+    outro: 'Handy for case files, project histories, and anything where cause and effect got tangled.',
+  },
+  {
+    id: 'compare',
+    icon: 'compare',
+    tag: 'Comparison',
+    heading: 'Compare two sources side by side',
+    intro:
+      "When you've uploaded competing reports or two takes on the same subject, the interesting part isn't either one alone. It's where they split.",
+    prompt:
+      "Compare [SOURCE A] and [SOURCE B] from the uploaded material. Lay out where they agree, where they directly contradict each other, and where one covers ground the other ignores entirely. For each disagreement, tell me what each side claims and what evidence they give. Don't pick a winner unless the evidence is genuinely one-sided.",
+    outro: '',
+  },
+  {
+    id: 'draft',
+    icon: 'pen',
+    tag: 'Grounded drafting',
+    heading: 'Draft from the source, not from thin air',
+    intro:
+      'Writing tools love to invent. This prompt keeps NotebookLM tethered to your actual material, so the draft it hands back is built from what you uploaded rather than whatever sounds plausible.',
+    prompt:
+      "Using only the uploaded sources, draft a [BLOG POST / EMAIL / SUMMARY] of about [LENGTH] on [TOPIC]. Pull every fact and figure from the material, and mark anything you can't support from the sources so I can check it. Match a plain, direct tone. No filler openings.",
+    outro:
+      'The "mark anything you can\'t support" line is the safeguard. It turns guesses into something you can see and verify.',
+  },
+  {
+    id: 'pressure-test',
+    icon: 'shield',
+    tag: 'Stress test',
+    heading: 'Pressure-test a plan',
+    intro:
+      'Before you commit to a plan that lives inside a document, it helps to hear the case against it. This prompt makes NotebookLM argue the other side using your own material.',
+    prompt:
+      "Treat the plan described in the uploaded sources as a proposal you've been asked to poke holes in. Give me the strongest case against it, drawn from the material itself: the risks, the costs, the assumptions that might not hold. Then tell me what would have to be true for the plan to work anyway.",
+    outro: '',
+  },
+  {
+    id: 'action-items',
+    icon: 'check',
+    tag: 'Action items',
+    heading: 'Pull out the action items',
+    intro:
+      'Meeting notes and long threads hide the parts that need doing. This one separates the things someone actually has to act on from the surrounding talk.',
+    prompt:
+      "Read the uploaded notes and pull out everything that's actually an action item: something someone needs to do. For each one, give me the task, who owns it if the source says, and any deadline mentioned. Keep decisions and discussion separate from tasks. If an owner or date is missing, mark it as unassigned rather than guessing.",
+    outro: '',
+  },
+  {
+    id: 'three-ways',
+    icon: 'layers',
+    tag: 'Clarity',
+    heading: 'Explain it three ways',
+    intro:
+      "Some ideas don't land the first way they're put. This prompt gives you the same concept from three angles, and usually one of them finally clicks.",
+    prompt:
+      'Take the hardest idea in the uploaded material and explain it to me three different ways: once with a plain definition, once with an analogy from everyday life, and once by walking through a concrete example step by step. Then tell me which of the three you think makes it clearest and why.',
+    outro: '',
+  },
+];
+
+// Inline stroke icons — line-art, matching the cartographic brand.
+const icons: Record<string, string> = {
+  globe:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"/></svg>',
+  target:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>',
+  bulb:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.4c.8.7 1 1.4 1 2.6h6c0-1.2.2-1.9 1-2.6A6 6 0 0 0 12 3Z"/></svg>',
+  search:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  alert:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 4 3 17a2 2 0 0 0 1.7 3h14.6a2 2 0 0 0 1.7-3L13.7 4a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  question:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>',
+  timeline:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v16"/><circle cx="5" cy="8" r="1.6"/><circle cx="5" cy="16" r="1.6"/><path d="M8 8h11M8 16h7"/></svg>',
+  compare:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg>',
+  pen:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  shield:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6Z"/></svg>',
+  check:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h10M4 17h6"/><path d="m17 6 2 2 3.5-3.5"/></svg>',
+  layers:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>',
+};
+
+const toc = [
+  ...sections.map((s) => ({ id: s.id, label: s.heading })),
+  { id: 'worth-keeping', label: 'Worth keeping in mind' },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: '12 NotebookLM Prompts That Do Real Work',
+  description:
+    'Twelve NotebookLM prompts our team actually uses — for language learning, fast decisions, critical reading, grounded drafting, post-mortems, and more.',
+  author: { '@type': 'Organization', name: 'BearingBridge AI' },
+  publisher: { '@type': 'Organization', name: 'BearingBridge AI', url: 'https://bearingbridge.ai' },
+  datePublished: '2026-06-25',
+  dateModified: '2026-06-25',
+  mainEntityOfPage: 'https://bearingbridge.ai/insights/12-notebooklm-prompts-that-do-real-work',
+  inLanguage: 'en',
+};
+---
+
+<Layout
+  title="12 NotebookLM Prompts That Do Real Work | BearingBridge AI"
+  description="Twelve NotebookLM prompts our team actually uses — for language learning, fast decisions, critical reading, grounded drafting, post-mortems, and more."
+>
+  <script type="application/ld+json" slot="head" is:inline set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Reading-progress bar -->
+  <div id="read-progress" class="fixed inset-x-0 top-0 z-50 h-[3px] origin-left scale-x-0 bg-accent" aria-hidden="true"></div>
+
+  <!-- ============================== HERO ============================== -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-36 sm:px-8 lg:grid-cols-12 lg:gap-10 lg:pb-24 lg:pt-48">
+      <div class="lg:col-span-6">
+        <p class="kicker" data-reveal>
+          <a href="/insights" class="transition-colors hover:text-accent-deep">Insights</a>
+          <span class="text-ink/30">/</span>
+          <span class="text-ink/55">Method</span>
+        </p>
+        <h1 class="font-display mt-6 text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl" data-reveal style="--reveal-delay: 1">
+          12 NotebookLM prompts that do real <span class="accent-word">work</span>.
+        </h1>
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-ink/70" data-reveal style="--reveal-delay: 2">
+          Most people give NotebookLM lazy prompts and get book reports back. Here are twelve our
+          team uses that pull real work out of it instead.
+        </p>
+
+        <!-- meta row -->
+        <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink/60" data-reveal style="--reveal-delay: 3">
+          <span class="inline-flex items-center gap-2">
+            <span class="grid h-9 w-9 place-items-center bg-ink text-xs font-semibold uppercase tracking-kicker text-cream">BB</span>
+            <span>The bearingbridge.ai team</span>
+          </span>
+          <span class="h-4 w-px bg-ink/15"></span>
+          <span>Updated June 2026</span>
+          <span class="h-4 w-px bg-ink/15"></span>
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            9 min read
+          </span>
+        </div>
+      </div>
+
+      <!-- screenshot card -->
+      <div class="lg:col-span-6" data-reveal="right" style="--reveal-delay: 2">
+        <figure data-parallax class="group relative will-change-transform">
+          <div class="absolute -inset-3 -z-10 bg-accent/10"></div>
+          <div class="corner-tick card-lift rotate-[-1.2deg] border border-ink/15 bg-paper p-2 transition-transform duration-500 group-hover:rotate-0 sm:p-3">
+            <img
+              src="/Images/insights/notebooklm-prompts.png"
+              alt="Screenshot of Google NotebookLM at work: a sources panel, a cited chat answer, and the Studio audio-overview panel"
+              class="block w-full"
+              width="2000"
+              height="1125"
+              loading="eager"
+            />
+          </div>
+          <figcaption class="absolute -bottom-3 left-5 inline-flex items-center gap-2 bg-ink px-3 py-1.5 text-xs uppercase tracking-kicker text-cream shadow-lg">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping bg-accent opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 bg-accent"></span>
+            </span>
+            NotebookLM · live session
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ARTICLE ============================== -->
+  <section class="bg-paper">
+    <div class="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-16 lg:py-28">
+      <!-- ---------- sticky left rail: TOC + progress ---------- -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <nav class="border border-ink/15 bg-cream-soft p-6" aria-label="Table of contents" data-reveal>
+          <p class="kicker">On this page</p>
+          <ol class="toc-rail mt-5 space-y-1">
+            {toc.map((item, i) => (
+              <li>
+                <a
+                  href={`#${item.id}`}
+                  data-toc-link={item.id}
+                  class="toc-link group flex items-start gap-3 py-2 pl-4 text-sm leading-snug text-ink/65 transition-colors hover:text-ink"
+                >
+                  <span class="numeral mt-0.5 text-xs opacity-70">{String(i + 1).padStart(2, '0')}</span>
+                  <span>{item.label}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
+
+      <!-- ---------- article body ---------- -->
+      <article class="max-w-2xl" data-reveal-group>
+        <p class="lead text-xl leading-relaxed text-ink/80" data-reveal>
+          Google's NotebookLM reads the documents you give it and answers questions grounded in
+          them, builds summaries, and can even turn a stack of files into an audio discussion. The
+          free tier covers most of what a student or casual researcher needs, with paid plans bundled
+          into Google's AI subscriptions starting at $7.99 a month for heavier use.
+        </p>
+
+        <!-- pricing stat callout -->
+        <aside class="stat-card card-lift mt-10 flex items-center gap-6 border border-sea/25 bg-cream-soft p-6 sm:p-7" data-reveal>
+          <div class="shrink-0 text-center">
+            <p class="font-display text-4xl italic leading-none text-sea sm:text-5xl">$7.99</p>
+            <p class="mt-1 text-[0.65rem] uppercase tracking-kicker text-ink/45">/ month</p>
+          </div>
+          <div class="h-14 w-px bg-sea/20"></div>
+          <p class="text-sm leading-relaxed text-ink/70">
+            NotebookLM Plus comes bundled with Google AI Plus at $7.99 a month, roughly doubling the
+            free tier's limits, according to coverage of Google's 2026 pricing.
+          </p>
+        </aside>
+
+        <p class="mt-10 leading-relaxed text-ink/75" data-reveal>
+          What separates a useful session from a forgettable one usually isn't the documents. It's
+          the prompt. Ask lazily and you get a competent book report. Ask well and the thing starts
+          behaving like a tutor, or an analyst, or an editor who doesn't care about your feelings.
+          These are twelve we keep coming back to. Each bracketed line is a placeholder you fill in.
+        </p>
+
+        <!-- ---------- the four prompts ---------- -->
+        {sections.map((s, i) => (
+          <section class="section-anchor mt-20 first:mt-16" id={s.id}>
+            <header class="flex items-start gap-5" data-reveal>
+              <span class="numeral shrink-0 text-5xl sm:text-6xl">{String(i + 1).padStart(2, '0')}</span>
+              <div class="pt-1">
+                <span class="inline-flex items-center gap-2 bg-accent/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-kicker text-accent">
+                  <span class="icon-chip" set:html={icons[s.icon]} />
+                  {s.tag}
+                </span>
+                <h2 class="font-display mt-3 text-2xl leading-snug text-ink sm:text-3xl">{s.heading}</h2>
+              </div>
+            </header>
+
+            <p class="mt-6 leading-relaxed text-ink/75" data-reveal>{s.intro}</p>
+
+            <!-- prompt card -->
+            <figure class="prompt-card card-lift mt-7" data-tilt data-prompt-card data-reveal>
+              <div class="prompt-head">
+                <span class="inline-flex items-center gap-2 text-[0.7rem] font-semibold uppercase tracking-kicker text-ink/45">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8M8 13h5"/><rect x="3" y="4" width="18" height="16" rx="1"/></svg>
+                  Prompt
+                </span>
+                <button type="button" class="copy-btn" data-copy aria-label="Copy prompt to clipboard">
+                  <svg class="copy-ic h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1.5"/><path d="M5 15V5a1.5 1.5 0 0 1 1.5-1.5H15"/></svg>
+                  <span class="copy-label">Copy</span>
+                </button>
+              </div>
+              <p class="prompt-text">{s.prompt}</p>
+            </figure>
+
+            {s.outro && <p class="mt-7 leading-relaxed text-ink/75" data-reveal>{s.outro}</p>}
+          </section>
+        ))}
+
+        <!-- ---------- closing ---------- -->
+        <section class="section-anchor mt-20" id="worth-keeping">
+          <div class="closing-card relative overflow-hidden border border-ink/15 bg-ink p-8 text-cream sm:p-10" data-reveal>
+            <span class="numeral absolute -right-4 -top-8 text-[9rem] leading-none text-cream/5 select-none">✦</span>
+            <p class="kicker !text-cream/50">In short</p>
+            <h2 class="font-display mt-4 text-2xl leading-snug sm:text-3xl">Worth keeping in mind</h2>
+            <p class="mt-5 max-w-xl leading-relaxed text-cream/75">
+              None of these are complicated, and that's sort of the point. The tool is only ever as
+              good as the question. Pick the prompt that matches the job, upload your material, and
+              you'll get a lot more than a summary back. Try one on something you're working on this
+              week and you'll see the difference fast enough.
+            </p>
+          </div>
+        </section>
+      </article>
+    </div>
+  </section>
+
+  <!-- ========================= NEWSLETTER BAND ========================= -->
+  <section class="meridians grain relative overflow-hidden bg-cream">
+    <div class="relative z-10 mx-auto max-w-3xl px-5 py-20 text-center sm:px-8 lg:py-24" data-reveal>
+      <p class="kicker justify-center">The East-West Briefing</p>
+      <h2 class="font-display mt-6 text-3xl leading-tight text-ink sm:text-4xl">
+        Get the briefing before your competitors <span class="accent-word">do</span>.
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink/70">
+        Monthly. What moved in AI on both sides of the world — and what it means for you.
+      </p>
+      <form class="mx-auto mt-8 flex max-w-md" action="/contact" method="get">
+        <label class="sr-only" for="article-email">Work email</label>
+        <input
+          id="article-email"
+          type="email"
+          name="email"
+          placeholder="Work email"
+          class="field flex-1"
+          required
+        />
+        <button type="submit" class="btn btn-primary shrink-0 !py-0">
+          <span>Subscribe</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ========================= BACK TO TOP ========================= -->
+  <button id="to-top" type="button" aria-label="Back to top" class="fixed bottom-6 right-6 z-40 grid h-12 w-12 translate-y-4 place-items-center bg-ink text-cream opacity-0 shadow-xl transition-all duration-300">
+    <svg class="relative z-10 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <svg class="absolute inset-0 -rotate-90" viewBox="0 0 48 48" aria-hidden="true"><circle id="to-top-ring" cx="24" cy="24" r="21" fill="none" stroke="var(--color-accent)" stroke-width="2.5" stroke-linecap="round"/></svg>
+  </button>
+</Layout>
+
+<script>
+  // ---------------------------------------------------------------------
+  // Article interactions: progress bar, scroll-spy, copy buttons,
+  // hero parallax, card tilt, back-to-top ring.
+  // ---------------------------------------------------------------------
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Reading-progress bar ----
+  const bar = document.getElementById('read-progress');
+  const article = document.querySelector('article');
+
+  // ---- Back-to-top ring ----
+  const toTop = document.getElementById('to-top');
+  const ring = document.getElementById('to-top-ring') as SVGCircleElement | null;
+  const RING_LEN = ring ? 2 * Math.PI * 21 : 0;
+  if (ring) {
+    ring.style.strokeDasharray = String(RING_LEN);
+    ring.style.strokeDashoffset = String(RING_LEN);
+  }
+  toTop?.addEventListener('click', () =>
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }),
+  );
+
+  const docProgress = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    return max > 0 ? Math.min(Math.max(h.scrollTop / max, 0), 1) : 0;
+  };
+
+  const updateScroll = () => {
+    if (bar && article) {
+      const rect = article.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0;
+      bar.style.transform = `scaleX(${p})`;
+    }
+    const dp = docProgress();
+    if (ring) ring.style.strokeDashoffset = String(RING_LEN * (1 - dp));
+    if (toTop) {
+      const show = window.scrollY > 600;
+      toTop.style.opacity = show ? '1' : '0';
+      toTop.style.transform = show ? 'translateY(0)' : 'translateY(1rem)';
+      toTop.style.pointerEvents = show ? 'auto' : 'none';
+    }
+  };
+
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      updateScroll();
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateScroll);
+  updateScroll();
+
+  // ---- Scroll-spy: highlight the section nearest the top ----
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+  const headings = links
+    .map((l) => document.getElementById(l.dataset.tocLink ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const setActive = (id: string | null) => {
+    for (const l of links) l.classList.toggle('is-active', l.dataset.tocLink === id);
+  };
+
+  if (headings.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-15% 0px -70% 0px', threshold: 0 },
+    );
+    headings.forEach((h) => spy.observe(h));
+    setActive(headings[0].id);
+  }
+
+  // ---- Copy-to-clipboard buttons ----
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const card = btn.closest('[data-prompt-card]');
+      const text = card?.querySelector('.prompt-text')?.textContent?.trim() ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      btn.classList.add('is-copied');
+      const label = btn.querySelector('.copy-label');
+      if (label) label.textContent = 'Copied';
+      setTimeout(() => {
+        btn.classList.remove('is-copied');
+        if (label) label.textContent = 'Copy';
+      }, 1800);
+    });
+  });
+
+  if (!reduce) {
+    // ---- Hero parallax: nudge the screenshot as it scrolls ----
+    const hero = document.querySelector<HTMLElement>('[data-parallax]');
+    if (hero) {
+      const par = () => {
+        const r = hero.getBoundingClientRect();
+        const offset = (r.top + r.height / 2 - window.innerHeight / 2) * -0.05;
+        hero.style.transform = `translateY(${offset}px)`;
+      };
+      window.addEventListener('scroll', par, { passive: true });
+      par();
+    }
+
+    // ---- Pointer tilt on prompt cards ----
+    if (matchMedia('(pointer: fine)').matches) {
+      document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+        el.addEventListener('mousemove', (ev) => {
+          const r = el.getBoundingClientRect();
+          const px = (ev.clientX - r.left) / r.width - 0.5;
+          const py = (ev.clientY - r.top) / r.height - 0.5;
+          el.style.transform = `perspective(900px) rotateX(${py * -3}deg) rotateY(${px * 3}deg)`;
+        });
+        el.addEventListener('mouseleave', () => {
+          el.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1)';
+          el.style.transform = '';
+          setTimeout(() => (el.style.transition = ''), 500);
+        });
+      });
+    }
+  }
+</script>
+
+<style>
+  #read-progress {
+    transition: transform 0.08s linear;
+  }
+  .section-anchor {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Editorial drop cap on the lead paragraph */
+  .lead::first-letter {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 3.6rem;
+    line-height: 0.78;
+    float: left;
+    margin: 0.32rem 0.55rem 0 0;
+    color: var(--color-accent);
+  }
+
+  /* ---- TOC rail with a vertical guide line + active pill ---- */
+  .toc-rail {
+    position: relative;
+  }
+  .toc-rail::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    width: 2px;
+    background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  }
+  .toc-link {
+    position: relative;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    transition: color 0.25s ease, border-color 0.3s ease;
+  }
+  .toc-link.is-active {
+    color: var(--color-accent-deep);
+    font-weight: 600;
+    border-left-color: var(--color-accent);
+  }
+  .toc-link.is-active .numeral {
+    opacity: 1;
+  }
+
+  /* ---- icon chips ---- */
+  .icon-chip :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  /* ---- pricing stat ---- */
+  .stat-card {
+    border-left-width: 3px;
+    border-left-color: var(--color-sea);
+  }
+
+  /* ---- prompt card: a paper "console" with a tinted header ---- */
+  .prompt-card {
+    border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+    border-left: 3px solid var(--color-accent);
+    background: linear-gradient(var(--color-cream-soft), var(--color-paper));
+    transform-style: preserve-3d;
+  }
+  .prompt-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1rem 0.65rem 1.4rem;
+    border-bottom: 1px dashed color-mix(in srgb, var(--color-ink) 16%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+  }
+  .prompt-text {
+    padding: 1.4rem 1.6rem;
+    line-height: 1.75;
+    color: color-mix(in srgb, var(--color-ink) 88%, transparent);
+  }
+
+  /* ---- copy button ---- */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+    cursor: pointer;
+    transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+  }
+  .copy-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .copy-btn.is-copied {
+    color: #fff;
+    background: var(--color-success);
+    border-color: var(--color-success);
+  }
+
+  #to-top {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-parallax],
+    [data-tilt] {
+      transform: none !important;
+    }
+  }
+</style>
